@@ -151,8 +151,6 @@ namespace AutoIECalcGUI
         {
             try
             {
-                CheckArgumentVaild();
-
                 Program.Config.IEPath = IEPathEdit.Text;
 
                 Program.Config.BaseDataPath = BasePathEdit.Text;
@@ -176,6 +174,8 @@ namespace AutoIECalcGUI
                 Program.Config.LeverArmOffsetX = LeverArmOffsetX.Text;
                 Program.Config.LeverArmOffsetY = LeverArmOffsetY.Text;
                 Program.Config.LeverArmOffsetZ = LeverArmOffsetZ.Text;
+
+                CheckArgumentVaild();
 
                 Program.Config.Save();
 
