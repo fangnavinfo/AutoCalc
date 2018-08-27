@@ -196,9 +196,10 @@ namespace AutoIECalcGUI
                 throw new ArgumentException("基站目录无法找到 *.18o 文件 " + BasePathEdit.Text);
             }
 
-            if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any())
+            if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any()
+                || !Directory.EnumerateFiles(RoverPathEdit.Text, "*.gpb").Any())
             {
-                throw new ArgumentException("流动站目录无法找到 *.TXT 文件 " + RoverPathEdit.Text);
+                throw new ArgumentException("流动站目录无法找到 *.TXT/*.gpb 文件 " + RoverPathEdit.Text);
             }
 
             if(File.Exists(Program.Config.GetProjectCfgPath()))
@@ -254,8 +255,9 @@ namespace AutoIECalcGUI
                 OutputPathEdit.Text = OutputPath;
             }
 
-            pattern = @"@@.*\\";
-            var match = Regex.Match(RoverPathEdit.Text, pattern, RegexOptions.RightToLeft);
+
+            pattern = @"@@.*?\\";
+            var match = Regex.Match(RoverPathEdit.Text, pattern);
             if (match.Success)
             {
                 OutPutFileName.Text = match.Value.Replace("@@", "").Replace(@"\", "");
