@@ -212,9 +212,9 @@ namespace AutoIECalcGUI
                 throw new ArgumentException("流动站目录无法找到 *.gps 文件 " + RoverPathEdit.Text);
             }
 
-            if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.imu").Any())
+            if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.imr").Any())
             {
-                throw new ArgumentException("流动站目录无法找到 *.imu 文件 " + RoverPathEdit.Text);
+                throw new ArgumentException("流动站目录无法找到 *.imr 文件 " + RoverPathEdit.Text);
             }
 
             if (BaseStationLat.Text.Count(x => x == ':') != 2 || BaseStationLon.Text.Count(x => x == ':') != 2)

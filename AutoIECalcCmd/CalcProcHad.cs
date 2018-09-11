@@ -36,7 +36,15 @@ namespace AutoIECalcCmd
 
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
-            convertWin.Get<Button>("Add All").Click();
+
+            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
+                           select x).Single();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
+
+            Window detectWin = app.FindWindow("Auto Detect");
+            detectWin.Get<Button>("是(Y)").Click();
 
             string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
                                   select x).First();
@@ -75,7 +83,16 @@ namespace AutoIECalcCmd
 
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawRoverGNSSDir());
-            convertWin.Get<Button>("Add All").Click();
+
+            string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
+                           select x).Single();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
+
+            Window detectWin = app.FindWindow("Auto Detect");
+            detectWin.Get<Button>("是(Y)").Click();
+
             convertWin.Get<Button>("Convert").Click();
 
             Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)");
@@ -89,29 +106,29 @@ namespace AutoIECalcCmd
             Log.INFO(string.Format("SUCCESS convert rover gnss data to gpb! output[{0}]", output));
 
 
-            Log.INFO(string.Format("START convert IMU gnss data to IMR!"));
-            ClearFile(config.GetRawRoverGNSSDir(), "*.imr");
+            //Log.INFO(string.Format("START convert IMU gnss data to IMR!"));
+            //ClearFile(config.GetRawRoverGNSSDir(), "*.imr");
 
-            app = Application.Launch(config.GetConvetIMUExePath());
-            Window imuWin = app.FindWindow("Waypoint IMU Data Conversion");
+            //app = Application.Launch(config.GetConvetIMUExePath());
+            //Window imuWin = app.FindWindow("Waypoint IMU Data Conversion");
             
-            imuWin.Get<Button>("Browse").Click();
-            Window openWin = app.FindWindow("Open Raw Binary IMU File");
-            {
-                string gdpPath = Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imu").First();
-                openWin.GetByIndex<Editor>(0).SetValue(gdpPath);
-                openWin.Get<Button>("打开(O)").Click();
-            }
+            //imuWin.Get<Button>("Browse").Click();
+            //Window openWin = app.FindWindow("Open Raw Binary IMU File");
+            //{
+            //    string gdpPath = Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imu").First();
+            //    openWin.GetByIndex<Editor>(0).SetValue(gdpPath);
+            //    openWin.Get<Button>("打开(O)").Click();
+            //}
 
-            imuWin.Get<Button>("Convert").Click();
-            Window convertingWin = app.FindWindow("Converting to IMR");
-            Thread.Sleep(2000);
-            convertingWin.Get<Button>("Close").Click();
+            //imuWin.Get<Button>("Convert").Click();
+            //Window convertingWin = app.FindWindow("Converting to IMR");
+            //Thread.Sleep(2000);
+            //convertingWin.Get<Button>("Close").Click();
 
-            app.Exit();
+            //app.Exit();
 
-            string IMRPath = Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imr").First(); ;
-            Log.INFO(string.Format("SUCCESS convert IMU gnss data to IMR! output[{0}]", IMRPath));
+            //string IMRPath = Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imr").First(); ;
+            //Log.INFO(string.Format("SUCCESS convert IMU gnss data to IMR! output[{0}]", IMRPath));
             return output;
         }
 
@@ -158,7 +175,7 @@ namespace AutoIECalcCmd
                 throw new Exception("GNSS File path is NULL");
             }
 
-            wizardWin.Get<Button>("I have IMU data file in Waypoint (IMR) format").Click();
+            //wizardWin.Get<Button>("I have IMU data file in Waypoint (IMR) format").Click();
             wizardWin.GetS<Button>("Browse")[1].Click();
 
             Window IMUWin = processIE.FindWindow("Select IMU File (Waypoint Format)");
@@ -167,7 +184,8 @@ namespace AutoIECalcCmd
 
             Thread.Sleep(1000);
             wizardWin.Get<Button>("下一步(N) >").Click();
-            Thread.Sleep(1000);
+            Window ConfirmWin = processIE.FindWindow("Add DMR File");
+            ConfirmWin.Get<Button>("是(Y)").Click();
             wizardWin.Get<Button>("下一步(N) >").Click();
             wizardWin.Get<Button>("I would like to add base station data").Click();
             wizardWin.Get<Button>("下一步(N) >").Click();

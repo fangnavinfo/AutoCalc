@@ -197,9 +197,9 @@ namespace AutoIECalcGUI
             }
 
             if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any()
-                || !Directory.EnumerateFiles(RoverPathEdit.Text, "*.gpb").Any())
+                && !Directory.EnumerateFiles(RoverPathEdit.Text, "*.gps").Any())
             {
-                throw new ArgumentException("流动站目录无法找到 *.TXT/*.gpb 文件 " + RoverPathEdit.Text);
+                throw new ArgumentException("流动站目录无法找到 *.TXT/*.gps 文件 " + RoverPathEdit.Text);
             }
 
             if(File.Exists(Program.Config.GetProjectCfgPath()))

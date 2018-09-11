@@ -27,11 +27,17 @@ namespace AutoIECalcCmd
 
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
-            convertWin.Get<Button>("Add All").Click();
+            //convertWin.Get<Button>("Add All").Click();
 
-            //string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
-            //                 select x).First();
-            
+            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
+                                  select x).First();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
+
+            Window detectWin = app.FindWindow("Auto Detect");
+            detectWin.Get<Button>("是(Y)").Click();
+
             //convertWin.Get<ListItem>(rawBasePath).Click();
             //convertWin.Get<Button>("Options").Click();
 
@@ -66,16 +72,15 @@ namespace AutoIECalcCmd
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawRoverGNSSDir());
 
-            //string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.TXT")
-            //                      where x.Contains("_T.TXT")
-            //                      select x).Single();
-            //name = name.Substring(name.LastIndexOf(@"\")+1);
-            //convertWin.Get<ListBox>(name).Click();
-            //convertWin.Get<Button>("Add").Click();
+            string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
+                           select x).First();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
 
-            //Window detectWin = app.FindWindow("Auto Detect");
-            //detectWin.Get<Button>("是(Y)").Click();
-            convertWin.Get<Button>("Add All").Click();
+            Window detectWin = app.FindWindow("Auto Detect");
+            detectWin.Get<Button>("是(Y)").Click();
+            //convertWin.Get<Button>("Add All").Click();
             convertWin.Get<Button>("Convert").Click();
 
             app.FindWindow("Converting NovAtel OEM/SPAN to GPB (1/2)");
