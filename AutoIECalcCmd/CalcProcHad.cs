@@ -239,24 +239,31 @@ namespace AutoIECalcCmd
 
             mainWin.GetByIndex<ToolbarButton>(11).Click();
             Window processWin = processIE.FindWindow("Process GNSS");
-            processWin.Get<Button>("Process").Click();
+            processWin.Get<Button>("Process").Click(0);
 
-            Window pppWin = processIE.FindWindow("Differential GNSS Preprocessing ...");
-            processWin.WaitExit(5 * 60, () =>
+            try
             {
-                ListView listView = processWin.TryGet<ListView>(0);
-                if (listView != null && listView.itemCount != 0)
+                Window pppWin = processIE.FindWindow("Differential GNSS Preprocessing ...");
+                processWin.WaitExit(5 * 60, () =>
                 {
-                    string[] infos = listView.AllItem();
-                    foreach (string info in infos)
+                    ListView listView = processWin.TryGet<ListView>(0);
+                    if (listView != null && listView.itemCount != 0)
                     {
-                        Log.WARN("Differential GNSS Preprocessing report:" + info);
-                    }
+                        string[] infos = listView.AllItem();
+                        foreach (string info in infos)
+                        {
+                            Log.WARN("Differential GNSS Preprocessing report:" + info);
+                        }
 
-                    processWin.Get<Button>("Continue").Click();
-                    processWin.WaitExit();
-                }
-            });
+                        processWin.Get<Button>("Continue").Click();
+                        processWin.WaitExit();
+                    }
+                });
+            }
+            catch(ArgumentException e)
+            {
+
+            }
 
 
             Window processWin1 = processIE.FindWindow(By.NameContains("Processing Differential GPS 1"));
@@ -320,7 +327,7 @@ namespace AutoIECalcCmd
             tightWin.GetByIndex<Editor>(1).SetValue(config.LeverArmOffsetY);
             tightWin.GetByIndex<Editor>(2).SetValue(config.LeverArmOffsetZ);
 
-            tightWin.Get<Button>("Process").Click();
+            tightWin.Get<Button>("Process").Click(0);
 
             Window processWin = app.FindWindow("Tightly Coupled Differential Preprocessing ...");
 

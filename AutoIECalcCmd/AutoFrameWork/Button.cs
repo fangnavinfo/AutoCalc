@@ -24,7 +24,7 @@ namespace AutoFrameWork
             return null;
         }
 
-        public void Click()
+        public void Click(int time=1000)
         {
             while(!WinAPI.IsWindowEnabled(_hWnd))
             {
@@ -41,7 +41,7 @@ namespace AutoFrameWork
             WinAPI.PostMessage(_hWnd, (int)WinAPI.WMMessage.WM_LBUTTONUP, (IntPtr)1, (IntPtr)0);
 
 
-            Thread.Sleep(1000);
+            Thread.Sleep(time);
 
             //WinAPI.PostMessage
         }

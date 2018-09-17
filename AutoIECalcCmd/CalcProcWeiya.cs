@@ -72,7 +72,7 @@ namespace AutoIECalcCmd
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawRoverGNSSDir());
 
-            string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
+            string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imu")
                            select x).First();
             name = name.Substring(name.LastIndexOf(@"\") + 1);
             convertWin.Get<ListBox>(name).Click();
@@ -80,10 +80,17 @@ namespace AutoIECalcCmd
 
             Window detectWin = app.FindWindow("Auto Detect");
             detectWin.Get<Button>("是(Y)").Click();
+
+            name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
+                           select x).First();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
+
             //convertWin.Get<Button>("Add All").Click();
             convertWin.Get<Button>("Convert").Click();
 
-            app.FindWindow("Converting NovAtel OEM/SPAN to GPB (1/2)");
+            app.FindWindow(By.NameContains("Converting NovAtel OEM/SPAN to GPB"));
 
             Window completeWin = app.FindWindow(By.NameContains("Conversion Complete"));
             convertWin.Get<Button>("Close").Click();
@@ -221,7 +228,7 @@ namespace AutoIECalcCmd
 
             mainWin.GetByIndex<ToolbarButton>(11).Click();
             Window processWin = processIE.FindWindow("Process GNSS");
-            processWin.Get<Button>("Process").Click();
+            processWin.Get<Button>("Process").Click(0);
 
             processWin = processIE.FindWindow("Differential GNSS Preprocessing ...");
             processWin.WaitExit(5*60, ()=>
@@ -298,7 +305,7 @@ namespace AutoIECalcCmd
             tightWin.GetByIndex<Editor>(1).SetValue(config.LeverArmOffsetY);
             tightWin.GetByIndex<Editor>(2).SetValue(config.LeverArmOffsetZ);
 
-            tightWin.Get<Button>("Process").Click();
+            tightWin.Get<Button>("Process").Click(0);
             Window processWin = app.FindWindow("Tightly Coupled Differential Preprocessing ...");
             processWin.WaitExit(5 * 60, () =>
                                         {
@@ -323,7 +330,7 @@ namespace AutoIECalcCmd
 
             Thread.Sleep(2000);
 
-            mainWin.GetByIndex<ToolbarButton>(4).Click();
+            mainWin.GetByIndex<ToolbarButton>(3).Click();
             Thread.Sleep(2000);
 
             Log.INFO(string.Format("SUCCESS Tightly couple"));
