@@ -21,6 +21,14 @@ namespace AutoIECalcCmd
         {
             Log.INFO(string.Format("START convert base station data to gpb!"));
 
+            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
+                           select x).FirstOrDefault();
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.LOG")
+                        select x).FirstOrDefault();
+            }
+
             ClearFile(config.GetRawBaseStationDir(), "*.gpb");
 
             Application app = Application.Launch(config.GetConvetGPBExePath());
@@ -29,15 +37,14 @@ namespace AutoIECalcCmd
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
             //convertWin.Get<Button>("Add All").Click();
 
-            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
-                                  select x).First();
             name = name.Substring(name.LastIndexOf(@"\") + 1);
             convertWin.Get<ListBox>(name).Click();
             convertWin.Get<Button>("Add").Click();
 
             Window detectWin = app.FindWindow("Auto Detect");
             detectWin.Get<Button>("是(Y)").Click();
-
+            detectWin.WaitExit();
+            
             //convertWin.Get<ListItem>(rawBasePath).Click();
             //convertWin.Get<Button>("Options").Click();
 
@@ -47,9 +54,9 @@ namespace AutoIECalcCmd
 
             convertWin.Get<Button>("Convert").Click();
 
-            app.FindWindow("Converting RINEX to GPB (1/1)");
+            app.FindWindow(By.NameContains("Converting"));
 
-            Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)");
+            Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)", 30*60);
             convertWin.Get<Button>("Close").Click();
 
             app.Exit();
@@ -72,27 +79,27 @@ namespace AutoIECalcCmd
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawRoverGNSSDir());
 
-            string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imu")
-                           select x).First();
-            name = name.Substring(name.LastIndexOf(@"\") + 1);
-            convertWin.Get<ListBox>(name).Click();
-            convertWin.Get<Button>("Add").Click();
+            //string name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.imu")
+            //               select x).First();
+            //name = name.Substring(name.LastIndexOf(@"\") + 1);
+            //convertWin.Get<ListBox>(name).Click();
+            //convertWin.Get<Button>("Add").Click();
 
-            Window detectWin = app.FindWindow("Auto Detect");
-            detectWin.Get<Button>("是(Y)").Click();
+            //Window detectWin = app.FindWindow("Auto Detect");
+            //detectWin.Get<Button>("是(Y)").Click();
 
-            name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
-                           select x).First();
-            name = name.Substring(name.LastIndexOf(@"\") + 1);
-            convertWin.Get<ListBox>(name).Click();
-            convertWin.Get<Button>("Add").Click();
+            //name = (from x in Directory.EnumerateFiles(config.GetRawRoverGNSSDir(), "*.gps")
+            //               select x).First();
+            //name = name.Substring(name.LastIndexOf(@"\") + 1);
+            //convertWin.Get<ListBox>(name).Click();
+            //convertWin.Get<Button>("Add").Click();
 
-            //convertWin.Get<Button>("Add All").Click();
+            convertWin.Get<Button>("Add All").Click();
             convertWin.Get<Button>("Convert").Click();
 
             app.FindWindow(By.NameContains("Converting NovAtel OEM/SPAN to GPB"));
 
-            Window completeWin = app.FindWindow(By.NameContains("Conversion Complete"));
+            Window completeWin = app.FindWindow(By.NameContains("Conversion Complete"), 240);
             convertWin.Get<Button>("Close").Click();
 
             app.Exit();
@@ -122,8 +129,23 @@ namespace AutoIECalcCmd
             mainWin.GetByIndex<ToolbarButton>(1).Click();
 
             Window wizardWin = processIE.FindWindow("Project Wizard");
-            wizardWin.Get<Button>("下一步(N) >").Click();
-            Thread.Sleep(1000);
+            while(true)
+            {
+                var button = wizardWin.Get<Button>("下一步(N) >");
+                button.Click();
+                Thread.Sleep(5000);
+
+                try
+                {
+                    wizardWin.Get<Button>("Create");
+                    break;
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+
 
             wizardWin.Get<Button>("Create").Click();
 
@@ -157,7 +179,7 @@ namespace AutoIECalcCmd
             Thread.Sleep(1000);
 
             wizardWin.Get<Button>("下一步(N) >").Click();
-            Window ConfirmWin = processIE.FindWindow("Add DMR File");
+            Window ConfirmWin = processIE.FindWindow(By.NameContains("Add"));
             ConfirmWin.Get<Button>("是(Y)").Click();
 
             wizardWin.Get<Button>("下一步(N) >").Click();
@@ -174,9 +196,19 @@ namespace AutoIECalcCmd
             
             GNSSWin.Get<Button>("打开(O)").Click();
 
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
             childWin.Get<Button>("下一步(N) >").Click();
+
+            Thread.Sleep(10 * 1000);
+
+            //Window errorWin1 = processIE.TryFindWindow("Error");
+            //if (errorWin1 != null)
+            //{
+            //    errorWin1.Get<Button>("确定").Click();
+            //    errorWin1.WaitExit();
+            //}
+
 
             Action<Window> actionNomarl = (Window masterStationWin) =>
             {
@@ -249,7 +281,7 @@ namespace AutoIECalcCmd
 
             Window processWin1 = processIE.FindWindow(By.NameContains("Processing Differential GPS 1"));
             Window processWin2 = processIE.FindWindow(By.NameContains("Processing Differential GPS 2"));
-            processWin1.WaitExit();
+            processWin1.WaitExit(20*60);
             processWin2.WaitExit();
 
             Log.INFO(string.Format("SUCCESS differential gnss"));
@@ -325,7 +357,7 @@ namespace AutoIECalcCmd
 
             Window childWin1 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 1"));
             Window childWin2 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 2"));
-            childWin1.WaitExit(10*60);
+            childWin1.WaitExit(120*60);
             childWin2.WaitExit();
 
             Thread.Sleep(2000);
@@ -349,8 +381,9 @@ namespace AutoIECalcCmd
 
             string output = config.GetPostprocessPath();
             exportWin.GetByIndex<Editor>(0).SetValue(output);
-            Thread.Sleep(2000);
+            Thread.Sleep(5000);
 
+            exportWin = app.FindWindow("Export Coordinates Wizard");
             exportWin.Get<Button>("下一步(N) >").Click();
             Thread.Sleep(2000);
 
@@ -374,6 +407,15 @@ namespace AutoIECalcCmd
             Thread.Sleep(3000);
 
             Log.INFO(string.Format("SUCESS Export PostT File"));
+
+            mainWin.GetMenu("View", "Processing Summary").Click();
+
+            Window summaryWin = app.FindWindow(By.NameContains("Processing Summary"));
+            summaryWin.Get<Button>("Save").Click();
+
+            Window saveWin = app.FindWindow(By.NameContains("Save Processing Summary"));
+            saveWin.Get<Button>("是(Y)").Click();
+
             return output;
         }
 

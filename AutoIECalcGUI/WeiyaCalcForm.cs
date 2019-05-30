@@ -191,9 +191,9 @@ namespace AutoIECalcGUI
 
         private void CheckArgumentVaild()
         {
-            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.18o").Any())
+            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.1?o").Any() && !Directory.EnumerateFiles(BasePathEdit.Text, "*.LOG").Any())
             {
-                throw new ArgumentException("基站目录无法找到 *.18o 文件 " + BasePathEdit.Text);
+                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG 文件 " + BasePathEdit.Text);
             }
 
             if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any()
@@ -252,9 +252,8 @@ namespace AutoIECalcGUI
 
             if (isReplace)
             {
-                OutputPathEdit.Text = OutputPath;
+                OutputPathEdit.Text = OutputPath.Replace(@"RawData\", "");
             }
-
 
             pattern = @"@@.*?\\";
             var match = Regex.Match(RoverPathEdit.Text, pattern);

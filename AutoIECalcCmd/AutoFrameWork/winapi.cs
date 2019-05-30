@@ -357,6 +357,10 @@ namespace AutoFrameWork
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWindow(IntPtr hWnd);
+        
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindowEnabled(IntPtr hWnd);
 
         [DllImport("user32.dll")]

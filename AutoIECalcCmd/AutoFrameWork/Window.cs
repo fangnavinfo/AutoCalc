@@ -179,7 +179,7 @@ namespace AutoFrameWork
         {
             Log.INFO(string.Format("Waiting Window[{0},{1}] Exit", _name, _hWnd));
 
-            while (WinAPI.IsWindowEnabled(_hWnd))
+            while (WinAPI.IsWindow(_hWnd))
             {
                 string currFindName = ctrlName;
                 Type findType = typeof(Button);
@@ -203,11 +203,6 @@ namespace AutoFrameWork
             }
         }
 
-        internal bool IsExit()
-        {
-            return WinAPI.IsWindowEnabled(_hWnd);
-        }
-
         internal void WaitChildWindowThen(params object[] args)
         {
             Dictionary<string, Action<Window>> dict = new Dictionary<string, Action<Window>>();
@@ -219,7 +214,7 @@ namespace AutoFrameWork
             }
 
             int iCount = 0;
-            while (iCount < 100)
+            while (iCount < 1000)
             {
                 Window findWindow = null;
 
@@ -457,14 +452,19 @@ namespace AutoFrameWork
             //    Thread.Sleep(200);
             //}
         }
-         
+        
+        public bool IsExit()
+        {
+            return !WinAPI.IsWindow(_hWnd);
+        }
+
         public void WaitExit(int second=5*60, Action  action = null)
         {
             Log.INFO(string.Format("Waiting Window[{0},{1}] Exit", _name, _hWnd));
 
             for (int i = 0; i < second; i++)
             {
-                if (!WinAPI.IsWindowEnabled(_hWnd))
+                if (!WinAPI.IsWindow(_hWnd))
                 {
                     return;
                 }
@@ -490,7 +490,21 @@ namespace AutoFrameWork
 
                 if(exceptHwnd != IntPtr.Zero)
                 {
-                    throw new Exception(string.Format("Find a error window:{0}, HWND:{1}", WinAPI.GetWindowText(exceptHwnd), exceptHwnd));
+                    IntPtr defaultHwnd = newTree.Find((IntPtr hwnd) =>
+                    {
+                        string str = WinAPI.GetWindowText(hwnd);
+                        if(str.Contains(" Defaulting to Generic profile"))
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    });
+                    
+                    if (defaultHwnd == IntPtr.Zero)
+                    {
+                        throw new Exception(string.Format("Find a error window:{0}, HWND:{1}", WinAPI.GetWindowText(exceptHwnd), exceptHwnd));
+                    }
                 }
 
 

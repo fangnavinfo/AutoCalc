@@ -37,7 +37,7 @@ namespace AutoIECalcCmd
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
 
-            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
+            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
                            select x).Single();
             name = name.Substring(name.LastIndexOf(@"\") + 1);
             convertWin.Get<ListBox>(name).Click();
@@ -46,7 +46,7 @@ namespace AutoIECalcCmd
             Window detectWin = app.FindWindow("Auto Detect");
             detectWin.Get<Button>("是(Y)").Click();
 
-            string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
+            string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
                                   select x).First();
 
             convertWin.Get<ListItem>(rawBasePath).Click();
@@ -330,12 +330,7 @@ namespace AutoIECalcCmd
             tightWin.Get<Button>("Process").Click(0);
 
             Window processWin = app.FindWindow("Tightly Coupled Differential Preprocessing ...");
-
-            Action<Button> continueAction = delegate (Button btn)
-            {
-                btn.Click();
-            };
-            processWin.WaitExit("Continue", continueAction);
+            processWin.WaitExit("Continue", (btn)=> { btn.Click(); });
 
             Window childWin1 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 1"));
             Window childWin2 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 2"));

@@ -13,6 +13,16 @@ namespace AutoFrameWork
 
         }
 
+        public static CheckBox CreateByName(IntPtr hWnd, IntPtr hWndWin, String name)
+        {
+            if (CheckByName(hWnd, name))
+            {
+                return (CheckBox)Activator.CreateInstance(typeof(CheckBox), hWnd, hWndWin, name);
+            }
+
+            return null;
+        }
+
         public static StaticText CreateByIndex(IntPtr hWnd, IntPtr hWndWin, int indexBaseZero, ref int currIndex)
         {
             int length = WinAPI.GetWindowTextLength(hWnd);
@@ -50,6 +60,33 @@ namespace AutoFrameWork
             Log.INFO(string.Format("Get StaticText:[{0}, {1}] value:[{2}] Win:[{3}]", _hWnd.ToString("X8"), _Text, text, _hWndWin.ToString("X8")));
 
             return text;
+        }
+
+        private static bool CheckByName(IntPtr hWnd, String name)
+        {
+
+            int length = WinAPI.GetWindowTextLength(hWnd);
+            StringBuilder windowName = new StringBuilder(length + 1);
+            WinAPI.GetWindowText(hWnd, windowName, windowName.Capacity);
+
+            StringBuilder className = new StringBuilder(length + 1000);
+            WinAPI.GetClassName(hWnd, className, className.Capacity);
+
+            //Console.WriteLine(string.Format("{0} {1} {2}", hWnd.ToString("x8"), className, windowName));
+
+            if (className.ToString() != "Static")
+            {
+                return false;
+            }
+
+            uint processid = 0;
+            WinAPI.GetWindowThreadProcessId(hWnd, out processid);
+            if (windowName.ToString().Replace("&", "") == name)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

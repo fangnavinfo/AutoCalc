@@ -356,9 +356,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(394, 170);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 12);
+            this.label5.Size = new System.Drawing.Size(35, 12);
             this.label5.TabIndex = 47;
-            this.label5.Text = ".PostT";
+            this.label5.Text = ".POST";
             // 
             // HadCalcForm
             // 

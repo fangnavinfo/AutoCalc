@@ -16,7 +16,9 @@ namespace AutoIECalcGUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SelectForm());
+
+            Program.Config = ConfigSetting.Load(ConfigSetting.WeiyaConfigPath);
+            Application.Run(new WeiyaCalcForm());
         }
 
         public static ConfigSetting Config = null; // ConfigSetting.Load(System.AppDomain.CurrentDomain.BaseDirectory + "weiyaconfig.json");

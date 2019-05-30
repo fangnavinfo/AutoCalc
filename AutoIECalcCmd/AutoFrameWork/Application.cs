@@ -39,16 +39,34 @@ namespace AutoFrameWork
             }
         }
 
-        public static Application FindProcess(string processname)
+        public static Application FindProcess(string processname, int timeout = 300)
         {
-            Process p = Process.GetProcessesByName(processname).SingleOrDefault();
-            if(p == null)
+            int waitmill = 500;
+            int max_waitcout = timeout*1000 / waitmill;
+
+            int waitcout = 0;
+            while (true)
             {
-                return null;
+                Process p = Process.GetProcessesByName(processname).SingleOrDefault();
+                if (p == null)
+                {
+                    if(waitcout < max_waitcout)
+                    {
+                        waitcout++;
+                        Thread.Sleep(waitmill);
+                        continue;
+                    }
+                    else
+                    {
+                        throw new Exception("find process timeout, processname:" + processname);
+                    }
+                    
+                }
+
+                Thread.Sleep(500);
+                return new Application(p);
             }
 
-            Thread.Sleep(500);
-            return new Application(p);
         }
 
         public static Application FindProcess(int pid)
@@ -108,9 +126,9 @@ namespace AutoFrameWork
             _process.WaitForExit();
         }
 
-        public Window FindWindow(string winText)
+        public Window FindWindow(string winText, int waitsecond = 90)
         {
-            return FindWindow(By.Name(winText));
+            return FindWindow(By.Name(winText), waitsecond);
 
             //try
             //{
@@ -162,7 +180,7 @@ namespace AutoFrameWork
 
         }
 
-        public Window FindWindow(Selector selector)
+        public Window FindWindow(Selector selector, int waitsecond = 90)
         {
             try
             {
@@ -175,7 +193,7 @@ namespace AutoFrameWork
                                 IntPtr exceptHwnd = tree.Find((IntPtr currhwnd) =>
                                                                 {
                                                                     string str = WinAPI.GetWindowText(currhwnd);
-                                                                    if (str.ToLower().Contains("error") || str.ToLower().Contains("fail") || str.ToLower().Contains("warn") || str.ToLower().Contains("not able"))
+                                                                    if (str.ToLower().Contains("fail") || str.ToLower().Contains("warn") || str.ToLower().Contains("not able"))
                                                                     {
                                                                         if (selector.IsTrue(currhwnd))
                                                                         {
@@ -204,14 +222,14 @@ namespace AutoFrameWork
                                 return true;
                             },
                           "",
-                          60);
+                          waitsecond);
 
                 Log.INFO(string.Format("Finded Winow:[{0},{1}], in PID:[{2}]", findWindow._name, findWindow.hwnd.ToString("X8"), _process.Id.ToString("X8")));
                 return findWindow;
             }
             catch (TimeoutException e)
             {
-                throw new ArgumentException(string.Format("can not find window:[{0}] in PID:[{1}]", selector.desc(), _process.Id.ToString("X8")));
+                throw new ArgumentException(string.Format(" can not find window:[{0}] in PID:[{1}]", selector.desc(), _process.Id.ToString("X8")));
             }
         }
 
@@ -348,7 +366,7 @@ namespace AutoFrameWork
             {
                 WinTree winTree = GetWindowTree();
                 IntPtr hWnd = winTree.Find(v2);
-                if(hWnd != IntPtr.Zero)
+                if(hWnd != IntPtr.Zero && WinAPI.IsWindowEnabled(hWnd))
                 {
                     Window findWindow = (Window)Activator.CreateInstance(typeof(Window), hWnd, v2);
                     Log.INFO(string.Format("Finded chid Window:[{0},{1}], in process:[{2}]", findWindow._name, findWindow._hWnd.ToString("X8"), _process.Id));
@@ -358,7 +376,7 @@ namespace AutoFrameWork
                 }
 
                 hWnd = winTree.Find(v1);
-                if (hWnd != IntPtr.Zero)
+                if (hWnd != IntPtr.Zero && WinAPI.IsWindowEnabled(hWnd))
                 {
                     Window findWindow = (Window)Activator.CreateInstance(typeof(Window), hWnd, v1);
                     Log.INFO(string.Format("Finded chid Window:[{0},{1}], in process:[{2}]", findWindow._name, findWindow._hWnd.ToString("X8"), _process.Id));

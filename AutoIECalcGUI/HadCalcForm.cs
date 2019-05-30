@@ -191,9 +191,9 @@ namespace AutoIECalcGUI
 
         private void CheckArgumentVaild()
         {
-            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.18o").Any())
+            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.1?o").Any() && !Directory.EnumerateFiles(BasePathEdit.Text, "*.LOG").Any())
             {
-                throw new ArgumentException("基站目录无法找到 *.18o 文件 " + BasePathEdit.Text);
+                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG文件 " + BasePathEdit.Text);
             }
 
             if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any()

@@ -75,7 +75,7 @@ namespace AutoIECalcCmd
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
             convertWin.Get<Button>("Add All").Click();
 
-            string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.18o")
+            string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
                                   select x).First();
 
             convertWin.Get<ListItem>(rawBasePath).Click();
@@ -92,7 +92,7 @@ namespace AutoIECalcCmd
 
             app.FindWindow("Converting RINEX to GPB (1/1)");
 
-            Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)");
+            Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)", 180);
             convertWin.Get<Button>("Close").Click();
 
             app.Exit();
@@ -138,26 +138,22 @@ namespace AutoIECalcCmd
                 remoteWin.WaitExit();
             }
 
-            remoteWin = processIE.FindWindow("Select Remote GNSS Data File");
+            Thread.Sleep(10 * 1000);
+
+
+            Window errorWin = processIE.TryFindWindow("Error");
+            if (errorWin != null)
             {
-                remoteWin.GetByIndex<ComboBox>(0).Select(config.AntennaProfile);
-                remoteWin.GetByIndex<Editor>(2).SetValue(config.AntennaMeasureHeight);
+                errorWin.Get<Button>("确定").Click();
+                errorWin.WaitExit();
+            }
 
-                //remoteWin.Get<Button>("Compute From Slant").Click();
-                //Window computeWin = processIE.FindWindow("Compute From Slant Height");
-                //{
-                //    computeWin.GetByIndex<Editor>(0).SetValue(config.SlantMeasure);
-                //    computeWin.GetByIndex<Editor>(1).SetValue(config.RadiusGround);
-                //    computeWin.GetByIndex<Editor>(2).SetValue(config.OffsetARP2Ground);
-                //    computeWin.Get<Button>("OK").Click();
-                //    computeWin.WaitExit();
-                //}
-
+            remoteWin = processIE.FindWindow("Select Remote GNSS Data File");
+            if (remoteWin != null)
+            {
                 remoteWin.Get<Button>("确定").Click();
                 remoteWin.WaitExit();
             }
-
- 
         }
 
         private void AddPreciseFile()
@@ -171,8 +167,41 @@ namespace AutoIECalcCmd
 
                 Application downloadApp = Application.FindProcess("Download");
                 Window processingWin = downloadApp.FindWindow("Processing ...");
+
+                try
                 {
-                    processingWin.WaitExit(10*60);
+                    string pre = "";
+                    int cout = 0;
+                    while(true)
+                    {
+                        var text = processingWin.GetByIndex<StaticText>(4);
+                        string current = text.GetValue();
+                        if (current == pre)
+                        {
+                            cout++;
+                        }
+                        else
+                        {
+                            cout = 0;
+                            pre = current;
+                        }
+
+                        if(cout > 180)
+                        {
+                            throw new Exception("下载星历超时，请检查网络");
+                        }
+
+                        Thread.Sleep(10*1000);
+                    }
+
+                }
+                catch(Exception e)
+                {
+                    Thread.Sleep(5 * 1000);
+                    if(!processingWin.IsExit())
+                    {
+                        throw e;
+                    }
                 }
 
                 Thread.Sleep(5000);
@@ -190,22 +219,18 @@ namespace AutoIECalcCmd
 
             Action<Window> pppAction = delegate (Window win)
                                        {
-                                           Action<Button> continueAction = delegate (Button btn)
-                                           {
-                                               btn.Click();
-                                           };
-                                           win.WaitExit("Continue", continueAction);
+                                           win.WaitExit("Continue", (btn) => { btn.Click(); });
 
-                                           app.FindWindow(By.NameContains("Processing Precise Point Positioning")).WaitExit();
+                                           app.FindWindow(By.NameContains("Processing Precise Point Positioning")).WaitExit(20*60);
                                        };
 
             Action<Window> procAction = delegate (Window win)
                                         {
-                                            win.WaitExit();
+                                            win.WaitExit(20*60);
                                         };
 
             mainWin.WaitChildWindowThen("PPP Preprocessing ...", pppAction,
-                                        "Processing Precise Point Positioning", procAction);
+                        "Processing Precise Point Positioning", procAction);
 
             Log.INFO(string.Format("SUCCESS differential gnss"));
 
@@ -219,7 +244,7 @@ namespace AutoIECalcCmd
             mainWin.GetByIndex<ToolbarButton>(20).Click();
 
             Window exportWin = app.FindWindow("Export Coordinates Wizard");
-            exportWin.Get<ListBox>("P_BaseStationPPP").Click();
+            exportWin.Get<ListBox>("z_BaseStationPPP").Click();
 
             exportWin.GetByIndex<Editor>(0).SetValue(config.GetCalcBaseOutputPath());
             string output = exportWin.GetByIndex<Editor>(0).GetValue();

@@ -23,7 +23,7 @@
     <ProjectGuid>{75FC330F-5B26-4005-A476-AC6FB2C68202}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>HideHook</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

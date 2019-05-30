@@ -95,12 +95,12 @@ namespace AutoIECalcPublic
 
         internal string GetCalcBaseProjectPath()
         {
-            return GetProjectDir() + @"\CalcBase" + ".cfg";
+            return GetProjectDir() + @"CalcBase" + ".cfg";
         }
 
         internal string GetCalcBaseOutputPath()
         {
-            return GetProjectDir() + @"\CalcBase" + ".txt";
+            return GetProjectDir() + @"CalcBase" + ".txt";
         }
 
         public string GetConvetGPBExePath()
@@ -125,17 +125,17 @@ namespace AutoIECalcPublic
 
         public string GetIE860ExePath()
         {
-            return IEPath + "wGpsIns.exe";
+            return IEPath + "\\wGpsIns.exe";
         }
 
         public string GetPostprocessPath()
         {
-            return GetProjectDir() + @"\" + outputName + ".postT";
+            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName + ".POST";
         }
 
         public string GetProjectCfgPath()
         {
-            return GetProjectDir() + @"\" + outputName +".cfg";
+            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName +".cfg";
         }
 
         public string GetProjectDir()
