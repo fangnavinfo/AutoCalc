@@ -115,6 +115,8 @@ namespace AutoIECalcGUI
             BaseStationLat.Text = string.Format("{0}:{1}:{2}", Program.Config.Lat[0], Program.Config.Lat[1], Program.Config.Lat[2]);
             BaseStationLon.Text = string.Format("{0}:{1}:{2}", Program.Config.Lon[0], Program.Config.Lon[1], Program.Config.Lon[2]);
             BaseStationHeight.Text = Program.Config.BasetStationHeight;
+
+            Program.Config.Save();
         }
 
         private void OutputPathBtn_Click(object sender, EventArgs e)

@@ -39,6 +39,36 @@ namespace AutoFrameWork
             }
         }
 
+        public static Application TryFindProcess(string processname, int timeout = 300)
+        {
+            int waitmill = 500;
+            int max_waitcout = timeout * 1000 / waitmill;
+
+            int waitcout = 0;
+            while (true)
+            {
+                Process p = Process.GetProcessesByName(processname).SingleOrDefault();
+                if (p == null)
+                {
+                    if (waitcout < max_waitcout)
+                    {
+                        waitcout++;
+                        Thread.Sleep(waitmill);
+                        continue;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                }
+
+                Thread.Sleep(500);
+                return new Application(p);
+            }
+
+        }
+
         public static Application FindProcess(string processname, int timeout = 300)
         {
             int waitmill = 500;

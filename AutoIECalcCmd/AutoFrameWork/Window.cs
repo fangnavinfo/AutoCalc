@@ -420,6 +420,21 @@ namespace AutoFrameWork
             throw new ArgumentException(string.Format("can not find control:[{0}], in window:[{1},{2}]", typeof(T1).Name, _name, _hWnd.ToString("X8")));
         }
 
+        public static Menu GetMenu(IntPtr hwnd, params string[] ctrlNames)
+        {
+            Menu[] menuInfos = WinAPI.GetMenuArray(WinAPI.GetMenu(hwnd));
+
+            Menu currMenu = null;
+            foreach (string name in ctrlNames)
+            {
+                currMenu = menuInfos.Where(x => x.name == name).First();
+                menuInfos = WinAPI.GetSubMenus(currMenu);
+            }
+
+            currMenu.hWndWin = hwnd;
+            return currMenu;
+        }
+
         public Menu GetMenu(params string[] ctrlNames)
         {
             Menu[] menuInfos = WinAPI.GetSubMenus(this);

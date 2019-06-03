@@ -50,21 +50,21 @@ namespace AutoIECalcCmd
 
         public void Dump()
         {
-            processConvert = Application.FindProcess("wConvert");
+            processConvert = Application.TryFindProcess("wConvert", 3);
             if (processConvert != null)
             {
                 Log.WARN(processConvert.GetWindowTree().ToString());
                 //processConvert.ShowWindows();
             }
 
-            processIE = Application.FindProcess("wGpsIns");
+            processIE = Application.TryFindProcess("wGpsIns", 3);
             if (processIE != null)
             {
                 Log.WARN(processIE.GetWindowTree().ToString());
                 //processIE.ShowWindows();
             }
 
-            processIE = Application.FindProcess("wConvertIMU");
+            processIE = Application.TryFindProcess("wConvertIMU", 3);
             if (processIE != null)
             {
                 Log.WARN(processIE.GetWindowTree().ToString());

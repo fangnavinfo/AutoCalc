@@ -15,6 +15,8 @@ namespace AutoIECalcCmd
             ClearProcess();
             CreateOutputPath();
 
+            File.Delete(config.GetCalcBaseProjectPath());
+
             string BaseGPBPath = ConvertBaseStationDataToGPB();
             //string BaseGPBPath = @"D:\temp\@@2018-06-07-142430\BASE\Rinex\1025047158F2.gpb";
             AddRemoteFile(BaseGPBPath);
@@ -73,20 +75,20 @@ namespace AutoIECalcCmd
 
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
-            convertWin.Get<Button>("Add All").Click();
+            convertWin.Get<Button>("Auto Add All").Click();
 
             string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
                                   select x).First();
 
-            convertWin.Get<ListItem>(rawBasePath).Click();
-            convertWin.Get<Button>("Options").Click();
+            //convertWin.Get<ListItem>(rawBasePath).Click();
+            //convertWin.Get<Button>("Options").Click();
 
-            Window rinexOptionWin = app.FindWindow("RINEX Options");
-            {
-                rinexOptionWin.Get<Button>("Static").Click();
-                rinexOptionWin.Get<Button>("OK").Click();
-                rinexOptionWin.WaitExit();
-            }
+            //Window rinexOptionWin = app.FindWindow("RINEX Options");
+            //{
+            //    rinexOptionWin.Get<Button>("Static").Click();
+            //    rinexOptionWin.Get<Button>("OK").Click();
+            //    rinexOptionWin.WaitExit();
+            //}
 
             convertWin.Get<Button>("Convert").Click();
 
@@ -107,7 +109,7 @@ namespace AutoIECalcCmd
         private void AddRemoteFile(string baseGPBPath)
         {
             Application processIE = Application.Launch(config.GetIE860ExePath());
-            processIE.FindWindow("Version 8.60").WaitExit();
+            processIE.FindWindow("Version 8.80").WaitExit();
 
 
             Window dowloadWin = processIE.TryFindWindow("Download Manufacturer Files");
@@ -116,7 +118,7 @@ namespace AutoIECalcCmd
                 dowloadWin.Get<Button>("Close").Click();
             }
 
-            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.60");
+            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.80");
             mainWin.GetByIndex<ToolbarButton>(0).Click();
 
             Thread.Sleep(2000);
@@ -160,7 +162,7 @@ namespace AutoIECalcCmd
         {
             Application app = Application.FindProcess("wGpsIns");
             Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
-            mainWin.GetMenu("File", "Add Precise Files").Click();
+            mainWin.GetMenu("File", "Add Precise/Alternate Files").Click();
             Window preciseWin = app.FindWindow("Precise Files");
             {
                 preciseWin.Get<Button>("Download").Click();
@@ -213,7 +215,7 @@ namespace AutoIECalcCmd
         {
             Application app = Application.FindProcess("wGpsIns");
             Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
-            mainWin.GetByIndex<ToolbarButton>(11).Click();
+            mainWin.GetMenu("Process", "Process GNSS\tF5").Click();
             Window processWin = app.FindWindow("Process GNSS");
             processWin.Get<Button>("Process").Click();
 
@@ -241,7 +243,7 @@ namespace AutoIECalcCmd
             Log.INFO(string.Format("START Export PostT File"));
             Application app = Application.FindProcess("wGpsIns");
             Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
-            mainWin.GetByIndex<ToolbarButton>(20).Click();
+            mainWin.GetMenu("Output", "Export Wizard").Click();
 
             Window exportWin = app.FindWindow("Export Coordinates Wizard");
             exportWin.Get<ListBox>("z_BaseStationPPP").Click();

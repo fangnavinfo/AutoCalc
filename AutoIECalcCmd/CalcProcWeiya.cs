@@ -94,7 +94,7 @@ namespace AutoIECalcCmd
             //convertWin.Get<ListBox>(name).Click();
             //convertWin.Get<Button>("Add").Click();
 
-            convertWin.Get<Button>("Add All").Click();
+            convertWin.Get<Button>("Auto Add All").Click();
             convertWin.Get<Button>("Convert").Click();
 
             app.FindWindow(By.NameContains("Converting NovAtel OEM/SPAN to GPB"));
@@ -116,7 +116,7 @@ namespace AutoIECalcCmd
             Log.INFO(string.Format("START differential gnss"));
 
             processIE = Application.Launch(config.GetIE860ExePath());
-            processIE.FindWindow("Version 8.60").WaitExit();
+            processIE.FindWindow("Version 8.80").WaitExit();
 
 
             Window dowloadWin = processIE.TryFindWindow("Download Manufacturer Files");
@@ -125,7 +125,7 @@ namespace AutoIECalcCmd
                 dowloadWin.Get<Button>("Close").Click();
             }
 
-            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.60");
+            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.80");
             mainWin.GetByIndex<ToolbarButton>(1).Click();
 
             Window wizardWin = processIE.FindWindow("Project Wizard");
@@ -184,6 +184,7 @@ namespace AutoIECalcCmd
 
             wizardWin.Get<Button>("下一步(N) >").Click();
             wizardWin.Get<Button>("I would like to add base station data").Click();
+            wizardWin.Get<Button>("Do not add precise files").Click();
             wizardWin.Get<Button>("下一步(N) >").Click();
             wizardWin.Get<ListBox>("Add Station from File").Click();
             wizardWin.Get<Button>("下一步(N) >").Click();
@@ -223,6 +224,7 @@ namespace AutoIECalcCmd
                 masterStationWin.GetByIndex<Editor>(8).SetValue(config.BasetStationHeight);
                 masterStationWin.GetByIndex<Editor>(10).SetValue(config.AntennaMeasureHeight);
 
+                masterStationWin.GetByIndex<ComboBox>(3).Select("WGS84");
                 masterStationWin.GetByIndex<ComboBox>(4).Select("Generic");
 
                 Thread.Sleep(1000);
@@ -258,11 +260,11 @@ namespace AutoIECalcCmd
             //wizardWin.Get<Button>("下一步(N) >").Click();
             wizardWin.Get<Button>("完成").Click();
 
-            mainWin.GetByIndex<ToolbarButton>(11).Click();
+            mainWin.GetMenu("Process", "Process GNSS\tF5").Click();
             Window processWin = processIE.FindWindow("Process GNSS");
             processWin.Get<Button>("Process").Click(0);
 
-            processWin = processIE.FindWindow("Differential GNSS Preprocessing ...");
+            processWin = processIE.FindWindow("Differential GNSS Pre-processing ...");
             processWin.WaitExit(5*60, ()=>
                                     {
                                         ListView listView = processWin.TryGet<ListView>(0);
@@ -279,8 +281,8 @@ namespace AutoIECalcCmd
                                         }
                                     });
 
-            Window processWin1 = processIE.FindWindow(By.NameContains("Processing Differential GPS 1"));
-            Window processWin2 = processIE.FindWindow(By.NameContains("Processing Differential GPS 2"));
+            Window processWin1 = processIE.FindWindow(By.NameContains("Processing Differential GNSS 1"));
+            Window processWin2 = processIE.FindWindow(By.NameContains("Processing Differential GNSS 2"));
             processWin1.WaitExit(20*60);
             processWin2.WaitExit();
 
@@ -294,7 +296,7 @@ namespace AutoIECalcCmd
 
             Application app = Application.FindProcess("wGpsIns");
             Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
-            mainWin.GetByIndex<ToolbarButton>(14).Click();
+            mainWin.GetMenu("Process", "Process TC (Tightly Coupled)").Click();
 
             Window tightWin = app.FindWindow("Process Tightly Coupled");
             //tightWin.Get<Button>("Advanced GNSS").Click();
@@ -338,7 +340,7 @@ namespace AutoIECalcCmd
             tightWin.GetByIndex<Editor>(2).SetValue(config.LeverArmOffsetZ);
 
             tightWin.Get<Button>("Process").Click(0);
-            Window processWin = app.FindWindow("Tightly Coupled Differential Preprocessing ...");
+            Window processWin = app.FindWindow("Tightly Coupled Differential Pre-processing ...");
             processWin.WaitExit(5 * 60, () =>
                                         {
                                             ListView listView = processWin.TryGet<ListView>(0);
@@ -355,14 +357,14 @@ namespace AutoIECalcCmd
                                             }
                                         });
 
-            Window childWin1 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 1"));
-            Window childWin2 = app.FindWindow(By.NameContains("Processing GPS-IMU TC 2"));
+            Window childWin1 = app.FindWindow(By.NameContains("Processing GNSS-IMU TC 1"));
+            Window childWin2 = app.FindWindow(By.NameContains("Processing GNSS-IMU TC 2"));
             childWin1.WaitExit(120*60);
             childWin2.WaitExit();
 
             Thread.Sleep(2000);
 
-            mainWin.GetByIndex<ToolbarButton>(3).Click();
+            mainWin.GetMenu("File", "Save Project").Click();
             Thread.Sleep(2000);
 
             Log.INFO(string.Format("SUCCESS Tightly couple"));
@@ -373,7 +375,7 @@ namespace AutoIECalcCmd
             Log.INFO(string.Format("START Export PostT File"));
             Application app = Application.FindProcess("wGpsIns");
             Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
-            mainWin.GetByIndex<ToolbarButton>(20).Click();
+            mainWin.GetMenu("Output", "Export Wizard").Click();
 
             Window exportWin = app.FindWindow("Export Coordinates Wizard");
             exportWin.Get<ListBox>("HUACE_Pos").Click();
@@ -401,10 +403,10 @@ namespace AutoIECalcCmd
 
             exportWin.Get<Button>("完成").Click();
 
-            Window ProcessWin = app.FindWindow(output);
-            ProcessWin.WaitExit();
+            //Window ProcessWin = app.FindWindow(output);
+            //ProcessWin.WaitExit();
 
-            Thread.Sleep(3000);
+            //Thread.Sleep(3000);
 
             Log.INFO(string.Format("SUCESS Export PostT File"));
 

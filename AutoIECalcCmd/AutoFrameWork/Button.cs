@@ -14,6 +14,14 @@ namespace AutoFrameWork
 
         }
 
+        public IntPtr hwnd
+        {
+            get
+            {
+                return base._hWnd;
+            }
+        }
+
         public static Button CreateByName(IntPtr hWnd, IntPtr hWndWin, String name)
         {
             if (CheckByName(hWnd, name))

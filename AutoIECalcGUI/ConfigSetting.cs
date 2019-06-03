@@ -95,7 +95,7 @@ namespace AutoIECalcPublic
 
         internal string GetCalcBaseProjectPath()
         {
-            return GetProjectDir() + @"CalcBase" + ".cfg";
+            return GetProjectDir() + @"CalcBase" + ".proj";
         }
 
         internal string GetCalcBaseOutputPath()
@@ -135,7 +135,7 @@ namespace AutoIECalcPublic
 
         public string GetProjectCfgPath()
         {
-            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName +".cfg";
+            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName +".proj";
         }
 
         public string GetProjectDir()
