@@ -33,6 +33,7 @@ namespace AutoIECalcPublic
             }
         }
 
+        public string RawPath;
         public string IEPath;
 
         public string BaseDataPath;

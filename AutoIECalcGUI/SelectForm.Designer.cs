@@ -38,7 +38,7 @@
             this.btnWeiya.Name = "btnWeiya";
             this.btnWeiya.Size = new System.Drawing.Size(135, 23);
             this.btnWeiya.TabIndex = 0;
-            this.btnWeiya.Text = "维亚解算";
+            this.btnWeiya.Text = "解算PostT";
             this.btnWeiya.UseVisualStyleBackColor = true;
             this.btnWeiya.Click += new System.EventHandler(this.btnWeiya_Click);
             // 
@@ -48,7 +48,7 @@
             this.btnHad.Name = "btnHad";
             this.btnHad.Size = new System.Drawing.Size(135, 23);
             this.btnHad.TabIndex = 1;
-            this.btnHad.Text = "HAD解算";
+            this.btnHad.Text = "畸变纠正";
             this.btnHad.UseVisualStyleBackColor = true;
             this.btnHad.Click += new System.EventHandler(this.btnHad_Click);
             // 

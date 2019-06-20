@@ -263,5 +263,15 @@ namespace AutoIECalcGUI
                 OutPutFileName.Text = match.Value.Replace("@@", "").Replace(@"\", "");
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //Process.Start("AutoIECalcCmd.exe", "HAD " + mode);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //Process.Start("AutoIECalcCmd.exe", "HAD " + mode);
+        }
     }
 }

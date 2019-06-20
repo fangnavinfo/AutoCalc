@@ -62,6 +62,11 @@
             this.label4 = new System.Windows.Forms.Label();
             this.OutPutFileName = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.rawRootPath = new System.Windows.Forms.TextBox();
+            this.RawRootPathBtn = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // IEPathEdit
@@ -93,7 +98,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(31, 78);
+            this.label3.Location = new System.Drawing.Point(31, 102);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 12);
             this.label3.TabIndex = 8;
@@ -102,7 +107,7 @@
             // BasePathBtn
             // 
             this.BasePathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
-            this.BasePathBtn.Location = new System.Drawing.Point(581, 73);
+            this.BasePathBtn.Location = new System.Drawing.Point(581, 97);
             this.BasePathBtn.Name = "BasePathBtn";
             this.BasePathBtn.Size = new System.Drawing.Size(75, 23);
             this.BasePathBtn.TabIndex = 7;
@@ -112,7 +117,7 @@
             // 
             // BasePathEdit
             // 
-            this.BasePathEdit.Location = new System.Drawing.Point(218, 74);
+            this.BasePathEdit.Location = new System.Drawing.Point(218, 98);
             this.BasePathEdit.Name = "BasePathEdit";
             this.BasePathEdit.Size = new System.Drawing.Size(349, 21);
             this.BasePathEdit.TabIndex = 6;
@@ -236,7 +241,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(31, 142);
+            this.label6.Location = new System.Drawing.Point(31, 166);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(101, 12);
             this.label6.TabIndex = 36;
@@ -244,7 +249,7 @@
             // 
             // OutputPathBtn
             // 
-            this.OutputPathBtn.Location = new System.Drawing.Point(581, 137);
+            this.OutputPathBtn.Location = new System.Drawing.Point(581, 161);
             this.OutputPathBtn.Name = "OutputPathBtn";
             this.OutputPathBtn.Size = new System.Drawing.Size(75, 23);
             this.OutputPathBtn.TabIndex = 35;
@@ -254,7 +259,7 @@
             // 
             // OutputPathEdit
             // 
-            this.OutputPathEdit.Location = new System.Drawing.Point(218, 138);
+            this.OutputPathEdit.Location = new System.Drawing.Point(218, 162);
             this.OutputPathEdit.Name = "OutputPathEdit";
             this.OutputPathEdit.Size = new System.Drawing.Size(349, 21);
             this.OutputPathEdit.TabIndex = 34;
@@ -263,7 +268,7 @@
             // ConfirmBtn
             // 
             this.ConfirmBtn.Enabled = false;
-            this.ConfirmBtn.Location = new System.Drawing.Point(581, 395);
+            this.ConfirmBtn.Location = new System.Drawing.Point(500, 400);
             this.ConfirmBtn.Name = "ConfirmBtn";
             this.ConfirmBtn.Size = new System.Drawing.Size(75, 23);
             this.ConfirmBtn.TabIndex = 37;
@@ -291,7 +296,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(31, 107);
+            this.label2.Location = new System.Drawing.Point(31, 131);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(89, 12);
             this.label2.TabIndex = 40;
@@ -299,7 +304,7 @@
             // 
             // RoverPathEdit
             // 
-            this.RoverPathEdit.Location = new System.Drawing.Point(218, 103);
+            this.RoverPathEdit.Location = new System.Drawing.Point(218, 127);
             this.RoverPathEdit.Name = "RoverPathEdit";
             this.RoverPathEdit.Size = new System.Drawing.Size(349, 21);
             this.RoverPathEdit.TabIndex = 41;
@@ -308,7 +313,7 @@
             // RoverPathBtn
             // 
             this.RoverPathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
-            this.RoverPathBtn.Location = new System.Drawing.Point(581, 102);
+            this.RoverPathBtn.Location = new System.Drawing.Point(581, 126);
             this.RoverPathBtn.Name = "RoverPathBtn";
             this.RoverPathBtn.Size = new System.Drawing.Size(75, 23);
             this.RoverPathBtn.TabIndex = 42;
@@ -329,7 +334,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(662, 395);
+            this.button1.Location = new System.Drawing.Point(581, 400);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 44;
@@ -340,7 +345,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(31, 170);
+            this.label4.Location = new System.Drawing.Point(31, 194);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 12);
             this.label4.TabIndex = 45;
@@ -348,7 +353,7 @@
             // 
             // OutPutFileName
             // 
-            this.OutPutFileName.Location = new System.Drawing.Point(218, 165);
+            this.OutPutFileName.Location = new System.Drawing.Point(218, 189);
             this.OutPutFileName.Name = "OutPutFileName";
             this.OutPutFileName.Size = new System.Drawing.Size(175, 21);
             this.OutPutFileName.TabIndex = 46;
@@ -356,17 +361,69 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(394, 170);
+            this.label5.Location = new System.Drawing.Point(394, 194);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 12);
             this.label5.TabIndex = 47;
             this.label5.Text = ".POST";
+            // 
+            // rawRootPath
+            // 
+            this.rawRootPath.Location = new System.Drawing.Point(218, 71);
+            this.rawRootPath.Name = "rawRootPath";
+            this.rawRootPath.Size = new System.Drawing.Size(349, 21);
+            this.rawRootPath.TabIndex = 48;
+            // 
+            // RawRootPathBtn
+            // 
+            this.RawRootPathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
+            this.RawRootPathBtn.Location = new System.Drawing.Point(581, 70);
+            this.RawRootPathBtn.Name = "RawRootPathBtn";
+            this.RawRootPathBtn.Size = new System.Drawing.Size(75, 23);
+            this.RawRootPathBtn.TabIndex = 49;
+            this.RawRootPathBtn.Text = "选择";
+            this.RawRootPathBtn.UseVisualStyleBackColor = true;
+            this.RawRootPathBtn.Click += new System.EventHandler(this.RawRootPathBtn_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(31, 75);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(89, 12);
+            this.label16.TabIndex = 50;
+            this.label16.Text = "采集数据根路径";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(33, 400);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(185, 23);
+            this.button2.TabIndex = 51;
+            this.button2.Text = "检查基站时间是否覆盖流动站";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(226, 400);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(185, 23);
+            this.button3.TabIndex = 52;
+            this.button3.Text = "检查轨迹点是否有照片";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // WeiyaCalcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(745, 455);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.rawRootPath);
+            this.Controls.Add(this.RawRootPathBtn);
+            this.Controls.Add(this.label16);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.OutPutFileName);
             this.Controls.Add(this.label4);
@@ -445,6 +502,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox OutPutFileName;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox rawRootPath;
+        private System.Windows.Forms.Button RawRootPathBtn;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
     }
 }
 

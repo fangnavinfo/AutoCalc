@@ -16,6 +16,7 @@ namespace AutoIECalcCmd
             CreateOutputPath();
 
             File.Delete(config.GetCalcBaseProjectPath());
+            File.Delete(config.GetCalcBaseOutputPath());
 
             string BaseGPBPath = ConvertBaseStationDataToGPB();
             //string BaseGPBPath = @"D:\temp\@@2018-06-07-142430\BASE\Rinex\1025047158F2.gpb";
@@ -67,7 +68,22 @@ namespace AutoIECalcCmd
 
         private string ConvertBaseStationDataToGPB()
         {
+            return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
             Log.INFO(string.Format("START convert base station data to gpb!"));
+
+            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
+                           select x).FirstOrDefault();
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.LOG")
+                        select x).FirstOrDefault();
+            }
+
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.DAT")
+                        select x).FirstOrDefault();
+            }
 
             ClearFile(config.GetRawBaseStationDir(), "*.gpb");
 
@@ -75,25 +91,18 @@ namespace AutoIECalcCmd
 
             Window convertWin = app.FindWindow("Convert Raw GNSS data to GPB");
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
-            convertWin.Get<Button>("Auto Add All").Click();
+            //convertWin.Get<Button>("Add All").Click();
 
-            string rawBasePath = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
-                                  select x).First();
+            name = name.Substring(name.LastIndexOf(@"\") + 1);
+            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<Button>("Add").Click();
 
-            //convertWin.Get<ListItem>(rawBasePath).Click();
-            //convertWin.Get<Button>("Options").Click();
-
-            //Window rinexOptionWin = app.FindWindow("RINEX Options");
-            //{
-            //    rinexOptionWin.Get<Button>("Static").Click();
-            //    rinexOptionWin.Get<Button>("OK").Click();
-            //    rinexOptionWin.WaitExit();
-            //}
+            Window detectWin = app.FindWindow("Auto Detect");
+            detectWin.Get<Button>("是(Y)").Click();
+            detectWin.WaitExit();
 
             convertWin.Get<Button>("Convert").Click();
-
-            app.FindWindow("Converting RINEX to GPB (1/1)");
-
+            
             Window completeWin = app.FindWindow("Conversion Complete (1/1 files succeeded)", 180);
             convertWin.Get<Button>("Close").Click();
 
@@ -110,12 +119,17 @@ namespace AutoIECalcCmd
         {
             Application processIE = Application.Launch(config.GetIE860ExePath());
             processIE.FindWindow("Version 8.80").WaitExit();
-
-
+       
             Window dowloadWin = processIE.TryFindWindow("Download Manufacturer Files");
             if (dowloadWin != null)
             {
                 dowloadWin.Get<Button>("Close").Click();
+            }
+
+            Window UpdatedWin = processIE.TryFindWindow("Auto-Update");
+            if (UpdatedWin != null)
+            {
+                UpdatedWin.Get<Button>("否(N)").Click();
             }
 
             Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.80");
@@ -161,7 +175,7 @@ namespace AutoIECalcCmd
         private void AddPreciseFile()
         {
             Application app = Application.FindProcess("wGpsIns");
-            Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer"));
+            Window mainWin = app.FindWindow(By.NameContains("Inertial Explorer 8"));
             mainWin.GetMenu("File", "Add Precise/Alternate Files").Click();
             Window preciseWin = app.FindWindow("Precise Files");
             {
@@ -252,8 +266,14 @@ namespace AutoIECalcCmd
             string output = exportWin.GetByIndex<Editor>(0).GetValue();
 
             exportWin.Get<Button>("下一步(N) >").Click();
+            Thread.Sleep(2000);
+
             exportWin.Get<Button>("下一步(N) >").Click();
+            Thread.Sleep(2000);
+
             exportWin.Get<Button>("下一步(N) >").Click();
+            Thread.Sleep(2000);
+
             exportWin.Get<Button>("完成").Click();
 
             Thread.Sleep(5000);

@@ -19,6 +19,7 @@ namespace AutoIECalcGUI
         {
             InitializeComponent();
 
+            rawRootPath.Text = Program.Config.RawPath;
             IEPathEdit.Text = Program.Config.IEPath;
 
             BasePathEdit.Text = Program.Config.BaseDataPath;
@@ -98,6 +99,7 @@ namespace AutoIECalcGUI
 
         private void CalcBaseLocBtn_Click(object sender, EventArgs e)
         {
+            Program.Config.RawPath = rawRootPath.Text;
             Program.Config.IEPath = IEPathEdit.Text;
 
             Program.Config.BaseDataPath = BasePathEdit.Text;
@@ -108,9 +110,10 @@ namespace AutoIECalcGUI
             Program.Config.BasetStationHeight = BaseStationHeight.Text;
             Program.Config.AntennaMeasureHeight = AntennaHeight.Text;
 
-            Program.Config.Save();
-            var dialog = new BaseLocCalcForm();
-            dialog.ShowDialog(this);
+            //Program.Config.Save();
+            //var dialog = new BaseLocCalcForm();
+            //dialog.ShowDialog(this);
+            CalcBase();
 
             BaseStationLat.Text = string.Format("{0}:{1}:{2}", Program.Config.Lat[0], Program.Config.Lat[1], Program.Config.Lat[2]);
             BaseStationLon.Text = string.Format("{0}:{1}:{2}", Program.Config.Lon[0], Program.Config.Lon[1], Program.Config.Lon[2]);
@@ -153,6 +156,7 @@ namespace AutoIECalcGUI
         {
             try
             {
+                Program.Config.RawPath = rawRootPath.Text;
                 Program.Config.IEPath = IEPathEdit.Text;
 
                 Program.Config.BaseDataPath = BasePathEdit.Text;
@@ -193,9 +197,10 @@ namespace AutoIECalcGUI
 
         private void CheckArgumentVaild()
         {
-            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.1?o").Any() && !Directory.EnumerateFiles(BasePathEdit.Text, "*.LOG").Any())
+            if (!Directory.EnumerateFiles(BasePathEdit.Text, "*.1?o").Any() && !Directory.EnumerateFiles(BasePathEdit.Text, "*.LOG").Any()
+                && !Directory.EnumerateFiles(BasePathEdit.Text, "*.DAT").Any())
             {
-                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG 文件 " + BasePathEdit.Text);
+                //throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG/*.DAT 文件 " + BasePathEdit.Text);
             }
 
             if (!Directory.EnumerateFiles(RoverPathEdit.Text, "*.TXT").Any()
@@ -263,6 +268,107 @@ namespace AutoIECalcGUI
             {
                 OutPutFileName.Text = match.Value.Replace("@@", "").Replace(@"\", "");
             }
+        }
+
+        private void CalcBase(string mode = "")
+        {
+            //Program.Config.AntennaProfile = textAntenaProfile.Text;
+            //Program.Config.SlantMeasure = textSlantMeasurement.Text;
+            //Program.Config.RadiusGround = textRadiusGround.Text;
+            //Program.Config.OffsetARP2Ground = textOffsetARP2Ground.Text;
+
+            Program.Config.Save();
+            Program.Config.Save(ConfigSetting.BaseConfigPath);
+
+            Process cmd = Process.Start("AutoIECalcCmd.exe", "BASE " + mode);
+
+            //btnConfirm.Enabled = false;
+            //btnForGround.Enabled = false;
+
+            //textRadiusGround.Enabled = false;
+            //textAntenaProfile.Enabled = false;
+            //textSlantMeasurement.Enabled = false;
+            //textOffsetARP2Ground.Enabled = false;
+
+            cmd.WaitForExit();
+
+            if (File.Exists(Program.Config.GetCalcBaseOutputPath()))
+            {
+                List<string> allLines = System.IO.File.ReadAllLines(Program.Config.GetCalcBaseOutputPath()).ToList();
+                allLines.RemoveAll(x => x.Length == 0);
+
+                string lastestLine = allLines.Last();
+                List<string> elems = lastestLine.Split(" ".ToCharArray()).ToList();
+                elems.RemoveAll(x => x.Length == 0);
+
+                Program.Config.Lat[0] = elems[0];
+                Program.Config.Lat[1] = elems[1];
+                Program.Config.Lat[2] = elems[2];
+                Program.Config.Lon[0] = elems[3];
+                Program.Config.Lon[1] = elems[4];
+                Program.Config.Lon[2] = elems[5];
+
+                Program.Config.BasetStationHeight = elems[6];
+            }
+
+            Close();
+        }
+
+        private void RawRootPathBtn_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                {
+                    MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                    return;
+                }
+
+                if (!dialog.SelectedPath.Split('\\').Last().StartsWith("@@"))
+                {
+                    MessageBox.Show(this, "采集数据根目录必须以\"@@\"开头");
+                    return;
+                }
+
+                rawRootPath.Text = dialog.SelectedPath + @"\";
+
+                if(BasePathEdit.Text == "" && RoverPathEdit.Text == "" && OutputPathEdit.Text == "")
+                {
+                    string basePath = rawRootPath.Text + @"RawData\BASE\";
+                    if (!Directory.Exists(basePath))
+                    {
+                        MessageBox.Show(this, string.Format("默认基站路径{0} 不存在，请手工输入！", basePath));
+                    }
+                    BasePathEdit.Text = basePath;
+
+                    string roverPath = rawRootPath.Text + @"RawData\ROVER\";
+                    if (!Directory.Exists(basePath))
+                    {
+                        MessageBox.Show(this, string.Format("默认流动站路径{0} 不存在，请手工输入！", basePath));
+                    }
+                    RoverPathEdit.Text = roverPath;
+
+                    string outputPath = rawRootPath.Text + @"Output\";
+                    OutputPathEdit.Text = outputPath;
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Process cmd = Process.Start("aimapCheck.exe", rawRootPath.Text + " -check_basetime");
+            cmd.WaitForExit();
+
+            MessageBox.Show("检查完毕！");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Process cmd = Process.Start("aimapCheck.exe", rawRootPath.Text + " -check_track2photo");
+            cmd.WaitForExit();
+
+            MessageBox.Show("检查完毕！");
         }
     }
 }

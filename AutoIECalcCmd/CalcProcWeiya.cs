@@ -19,6 +19,8 @@ namespace AutoIECalcCmd
 
         public override string ConvertBaseStationDataToGPB()
         {
+            return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
+
             Log.INFO(string.Format("START convert base station data to gpb!"));
 
             string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
@@ -26,6 +28,12 @@ namespace AutoIECalcCmd
             if (name == null)
             {
                 name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.LOG")
+                        select x).FirstOrDefault();
+            }
+
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.DAT")
                         select x).FirstOrDefault();
             }
 

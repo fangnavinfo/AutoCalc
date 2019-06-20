@@ -30,11 +30,10 @@ namespace AutoIECalcGUI
         private void btnHad_Click(object sender, EventArgs e)
         {
             this.Hide();
-
-            Program.Config = ConfigSetting.Load(ConfigSetting.HadConfigPath);
-            HadCalcForm dialog = new HadCalcForm();
+            
+            StereoMatchLaunchForm dialog = new StereoMatchLaunchForm();
             dialog.ShowDialog();
-            this.Hide();
+
             this.Close();
         }
     }
