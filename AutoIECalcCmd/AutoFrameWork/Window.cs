@@ -460,7 +460,7 @@ namespace AutoFrameWork
 
             _process = Application.FindProcess((int)pid);
 
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             //while (!WinAPI.IsWindowEnabled(_hWnd))
             //{

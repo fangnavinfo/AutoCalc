@@ -36,5 +36,20 @@ namespace AutoIECalcGUI
 
             this.Close();
         }
+
+        private void btnMutilCalc_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+
+            MultiCalcForm dialog = new MultiCalcForm();
+            dialog.ShowDialog();
+
+            this.Close();
+        }
+
+        private void SelectForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

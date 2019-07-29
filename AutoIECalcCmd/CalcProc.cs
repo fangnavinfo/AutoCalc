@@ -50,6 +50,13 @@ namespace AutoIECalcCmd
 
         public void Dump()
         {
+            processConvert = Application.TryFindProcess("Download", 3);
+            if (processConvert != null)
+            {
+                Log.WARN(processConvert.GetWindowTree().ToString());
+                //processConvert.ShowWindows();
+            }
+
             processConvert = Application.TryFindProcess("wConvert", 3);
             if (processConvert != null)
             {

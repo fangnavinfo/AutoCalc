@@ -33,6 +33,14 @@ namespace AutoIECalcPublic
             }
         }
 
+        public static string errfile
+        {
+            get
+            {
+                return System.AppDomain.CurrentDomain.BaseDirectory + "error.txt";
+            }
+        }
+
         public string RawPath;
         public string IEPath;
 
@@ -56,6 +64,7 @@ namespace AutoIECalcPublic
         public string LeverArmOffsetZ ;
 
         public string startTime;
+        public string endTime;
 
         public string outputName;
 
@@ -80,7 +89,7 @@ namespace AutoIECalcPublic
 
         public void Save()
         {
-            startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            //startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
             string json = JsonMapper.ToJson(this);
             System.IO.File.WriteAllText(filePath, json, Encoding.UTF8);
@@ -88,7 +97,7 @@ namespace AutoIECalcPublic
 
         public void Save(string path)
         {
-            startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            //startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
             string json = JsonMapper.ToJson(this);
             System.IO.File.WriteAllText(path, json, Encoding.UTF8);
@@ -117,6 +126,31 @@ namespace AutoIECalcPublic
         public string GetRawBaseStationDir()
         {
             return BaseDataPath;
+        }
+
+        public string GetRawBaseStationFileName()
+        {
+            string name = (from x in Directory.EnumerateFiles(GetRawBaseStationDir(), "*.1?o")
+                           select x).FirstOrDefault();
+
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(GetRawBaseStationDir(), "*.LOG")
+                        select x).FirstOrDefault();
+            }
+
+            if (name == null)
+            {
+                name = (from x in Directory.EnumerateFiles(GetRawBaseStationDir(), "*.DAT")
+                        select x).FirstOrDefault();
+            }
+
+            if(name == null)
+            {
+                return "";
+            }
+
+            return name.Substring(name.LastIndexOf(@"\") + 1);
         }
 
         public string GetRawRoverGNSSDir()
@@ -154,6 +188,65 @@ namespace AutoIECalcPublic
             string path = (from x in Directory.EnumerateFiles(RoverDataPath, "*.imr")
                              select x).First();
             return path;
+        }
+
+        public void Init(string rawRootPath)
+        {
+            RawPath = rawRootPath;
+
+            BaseDataPath = rawRootPath + @"RawData\BASE\";
+            if (!Directory.Exists(BaseDataPath))
+            {
+                throw new Exception(string.Format("默认基站路径{0} 不存在，无法解算！", BaseDataPath));
+            }
+
+            if (!Directory.EnumerateFiles(BaseDataPath, "*.1?o").Any() && !Directory.EnumerateFiles(BaseDataPath, "*.LOG").Any()
+                && !Directory.EnumerateFiles(BaseDataPath, "*.DAT").Any())
+            {
+                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG/*.DAT 文件 " + BaseDataPath);
+            }
+
+            RoverDataPath = rawRootPath + @"RawData\ROVER\";
+            if (!Directory.Exists(RoverDataPath))
+            {
+                throw new Exception(string.Format("默认流动站路径{0} 不存在，无法解算！", RoverDataPath));
+            }
+
+            if (!Directory.EnumerateFiles(RoverDataPath, "*.TXT").Any() && !Directory.EnumerateFiles(RoverDataPath, "*.gps").Any())
+            {
+                throw new ArgumentException("流动站目录无法找到 *.TXT/*.gps 文件 " + RoverDataPath);
+            }
+
+            OutputPath = rawRootPath + @"Output\";
+
+            string offsetFilePath = OutputPath + "天线偏移参数.txt";
+            if (!File.Exists(offsetFilePath))
+            {
+                throw new Exception(string.Format("默认偏移参数文件{0} 不存在，无法解算！", offsetFilePath));
+            }
+            else
+            {
+                string param = File.ReadAllLines(offsetFilePath, Encoding.GetEncoding("gbk")).First();
+                if (!param.Contains("天线："))
+                {
+                    throw new Exception(string.Format("默认偏移参数文件 {0} 解析失败，无法解算！", offsetFilePath));
+                }
+
+                try
+                {
+                    var splits = param.Replace("天线：", "").Split(' ');
+                    LeverArmOffsetX = double.Parse(splits[0]).ToString();
+                    LeverArmOffsetY = double.Parse(splits[1]).ToString();
+                    LeverArmOffsetZ = double.Parse(splits[2]).ToString();
+                }
+                catch (Exception)
+                {
+
+                    throw new Exception(string.Format("默认偏移参数文件 {0} 解析失败，无法解算！", offsetFilePath));
+                }
+            }
+
+            outputName = rawRootPath.Substring(rawRootPath.IndexOf("@@")+2).Replace("\\", "");
         }
 
         private string projectDir = null;

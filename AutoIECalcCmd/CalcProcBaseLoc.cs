@@ -29,25 +29,34 @@ namespace AutoIECalcCmd
             Process p = Process.Start("notepad", output);
             return output;
         }
-
         public void Dump()
         {
-            var processDownload = Application.FindProcess("Download");
-            if (processDownload != null)
-            {
-                Log.WARN(processDownload.GetWindowTree().ToString());
-            }
-
-            var processConvert = Application.FindProcess("wConvert");
+            var processConvert = Application.TryFindProcess("Download", 3);
             if (processConvert != null)
             {
                 Log.WARN(processConvert.GetWindowTree().ToString());
+                //processConvert.ShowWindows();
             }
 
-            var processIE = Application.FindProcess("wGpsIns");
+            processConvert = Application.TryFindProcess("wConvert", 3);
+            if (processConvert != null)
+            {
+                Log.WARN(processConvert.GetWindowTree().ToString());
+                //processConvert.ShowWindows();
+            }
+
+            var processIE = Application.TryFindProcess("wGpsIns", 3);
             if (processIE != null)
             {
                 Log.WARN(processIE.GetWindowTree().ToString());
+                //processIE.ShowWindows();
+            }
+
+            processIE = Application.TryFindProcess("wConvertIMU", 3);
+            if (processIE != null)
+            {
+                Log.WARN(processIE.GetWindowTree().ToString());
+                //processIE.ShowWindows();
             }
         }
 
@@ -68,22 +77,8 @@ namespace AutoIECalcCmd
 
         private string ConvertBaseStationDataToGPB()
         {
-            return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
+            //return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
             Log.INFO(string.Format("START convert base station data to gpb!"));
-
-            string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
-                           select x).FirstOrDefault();
-            if (name == null)
-            {
-                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.LOG")
-                        select x).FirstOrDefault();
-            }
-
-            if (name == null)
-            {
-                name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.DAT")
-                        select x).FirstOrDefault();
-            }
 
             ClearFile(config.GetRawBaseStationDir(), "*.gpb");
 
@@ -93,8 +88,7 @@ namespace AutoIECalcCmd
             convertWin.GetByIndex<Editor>(0).SetValue(config.GetRawBaseStationDir());
             //convertWin.Get<Button>("Add All").Click();
 
-            name = name.Substring(name.LastIndexOf(@"\") + 1);
-            convertWin.Get<ListBox>(name).Click();
+            convertWin.Get<ListBox>(config.GetRawBaseStationFileName()).Click();
             convertWin.Get<Button>("Add").Click();
 
             Window detectWin = app.FindWindow("Auto Detect");
@@ -142,7 +136,7 @@ namespace AutoIECalcCmd
                 projWin.GetByIndex<Editor>(0).SetValue(config.GetCalcBaseProjectPath());
                 Thread.Sleep(2000);
                 projWin.Get<Button>("保存(S)").Click();
-                projWin.WaitExit();
+                projWin.WaitExit(20);
             }
 
             mainWin.GetMenu("File", "Add Remote File").Click();
@@ -151,7 +145,7 @@ namespace AutoIECalcCmd
             {
                 remoteWin.GetByIndex<Editor>(0).SetValue(baseGPBPath);
                 remoteWin.Get<Button>("打开(O)").Click();
-                remoteWin.WaitExit();
+                remoteWin.WaitExit(20);
             }
 
             Thread.Sleep(10 * 1000);

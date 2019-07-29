@@ -19,9 +19,11 @@ namespace AutoIECalcCmd
 
         public override string ConvertBaseStationDataToGPB()
         {
-            return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
+            //return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
 
             Log.INFO(string.Format("START convert base station data to gpb!"));
+
+            var namse = Directory.EnumerateFiles(config.GetRawBaseStationDir());
 
             string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")
                            select x).FirstOrDefault();
@@ -124,7 +126,7 @@ namespace AutoIECalcCmd
             Log.INFO(string.Format("START differential gnss"));
 
             processIE = Application.Launch(config.GetIE860ExePath());
-            processIE.FindWindow("Version 8.80").WaitExit();
+            processIE.FindWindow("Version 8.80", 90).WaitExit();
 
 
             Window dowloadWin = processIE.TryFindWindow("Download Manufacturer Files");
@@ -133,7 +135,7 @@ namespace AutoIECalcCmd
                 dowloadWin.Get<Button>("Close").Click();
             }
 
-            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.80");
+            Window mainWin = processIE.FindWindow("Waypoint - Inertial Explorer 8.80", 90);
             mainWin.GetByIndex<ToolbarButton>(1).Click();
 
             Window wizardWin = processIE.FindWindow("Project Wizard");
@@ -141,7 +143,7 @@ namespace AutoIECalcCmd
             {
                 var button = wizardWin.Get<Button>("下一步(N) >");
                 button.Click();
-                Thread.Sleep(5000);
+                Thread.Sleep(3000);
 
                 try
                 {
@@ -209,7 +211,7 @@ namespace AutoIECalcCmd
 
             childWin.Get<Button>("下一步(N) >").Click();
 
-            Thread.Sleep(10 * 1000);
+            Thread.Sleep(5 * 1000);
 
             //Window errorWin1 = processIE.TryFindWindow("Error");
             //if (errorWin1 != null)

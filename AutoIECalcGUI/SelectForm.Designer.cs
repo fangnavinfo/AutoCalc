@@ -30,6 +30,7 @@
         {
             this.btnWeiya = new System.Windows.Forms.Button();
             this.btnHad = new System.Windows.Forms.Button();
+            this.btnMutilCalc = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnWeiya
@@ -44,7 +45,7 @@
             // 
             // btnHad
             // 
-            this.btnHad.Location = new System.Drawing.Point(27, 85);
+            this.btnHad.Location = new System.Drawing.Point(27, 103);
             this.btnHad.Name = "btnHad";
             this.btnHad.Size = new System.Drawing.Size(135, 23);
             this.btnHad.TabIndex = 1;
@@ -52,15 +53,27 @@
             this.btnHad.UseVisualStyleBackColor = true;
             this.btnHad.Click += new System.EventHandler(this.btnHad_Click);
             // 
+            // btnMutilCalc
+            // 
+            this.btnMutilCalc.Location = new System.Drawing.Point(27, 74);
+            this.btnMutilCalc.Name = "btnMutilCalc";
+            this.btnMutilCalc.Size = new System.Drawing.Size(135, 23);
+            this.btnMutilCalc.TabIndex = 2;
+            this.btnMutilCalc.Text = "批量解算PostT";
+            this.btnMutilCalc.UseVisualStyleBackColor = true;
+            this.btnMutilCalc.Click += new System.EventHandler(this.btnMutilCalc_Click);
+            // 
             // SelectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(184, 179);
+            this.Controls.Add(this.btnMutilCalc);
             this.Controls.Add(this.btnHad);
             this.Controls.Add(this.btnWeiya);
             this.Name = "SelectForm";
             this.Text = "SelectCalc";
+            this.Load += new System.EventHandler(this.SelectForm_Load);
             this.ResumeLayout(false);
 
         }
@@ -69,5 +82,6 @@
 
         private System.Windows.Forms.Button btnWeiya;
         private System.Windows.Forms.Button btnHad;
+        private System.Windows.Forms.Button btnMutilCalc;
     }
 }

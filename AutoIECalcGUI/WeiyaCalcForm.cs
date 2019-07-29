@@ -19,6 +19,36 @@ namespace AutoIECalcGUI
         {
             InitializeComponent();
 
+            IEPathEdit.TextChanged += (object sender, EventArgs e) =>
+            {
+                RawRootPathBtn.Enabled = (IEPathEdit.Text.Any());
+            };
+
+            rawRootPath.TextChanged += (object sender, EventArgs e) =>
+            {
+                CalcBaseLocBtn.Enabled = (rawRootPath.Text.Any());
+            };
+
+            BaseStationLon.TextChanged += (object sender, EventArgs e) =>
+            {
+                CheckCalcVaild();
+            };
+
+            BaseStationLat.TextChanged += (object sender, EventArgs e) =>
+            {
+                CheckCalcVaild();
+            };
+
+            BaseStationHeight.TextChanged += (object sender, EventArgs e) =>
+            {
+                CheckCalcVaild();
+            };
+
+            AntennaHeight.TextChanged += (object sender, EventArgs e) =>
+            {
+                CheckCalcVaild();
+            };
+
             rawRootPath.Text = Program.Config.RawPath;
             IEPathEdit.Text = Program.Config.IEPath;
 
@@ -46,6 +76,11 @@ namespace AutoIECalcGUI
             LeverArmOffsetZ.Text = Program.Config.LeverArmOffsetZ;
         }
 
+        private void CheckCalcVaild()
+        {
+            CalcButton.Enabled = (BaseStationLon.Text.Any() && BaseStationLat.Text.Any() && BaseStationHeight.Text.Any() && AntennaHeight.Text.Any());
+        }
+
         private void AutoIECalcForm_Load(object sender, EventArgs e)
         {
 
@@ -60,6 +95,13 @@ namespace AutoIECalcGUI
                 if (string.IsNullOrEmpty(dialog.SelectedPath))
                 {
                     MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                    return;
+                }
+
+                var filePath = dialog.SelectedPath + @"\wGpsIns.exe";
+                if (!File.Exists(filePath))
+                {
+                    MessageBox.Show(this, "IE程序不存在，" + filePath, "提示");
                     return;
                 }
 
@@ -118,6 +160,7 @@ namespace AutoIECalcGUI
             BaseStationLat.Text = string.Format("{0}:{1}:{2}", Program.Config.Lat[0], Program.Config.Lat[1], Program.Config.Lat[2]);
             BaseStationLon.Text = string.Format("{0}:{1}:{2}", Program.Config.Lon[0], Program.Config.Lon[1], Program.Config.Lon[2]);
             BaseStationHeight.Text = Program.Config.BasetStationHeight;
+            AntennaHeight.Text = Program.Config.AntennaMeasureHeight;
 
             Program.Config.Save();
         }
@@ -280,6 +323,8 @@ namespace AutoIECalcGUI
             Program.Config.Save();
             Program.Config.Save(ConfigSetting.BaseConfigPath);
 
+            Program.Config.startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
             Process cmd = Process.Start("AutoIECalcCmd.exe", "BASE " + mode);
 
             //btnConfirm.Enabled = false;
@@ -291,6 +336,8 @@ namespace AutoIECalcGUI
             //textOffsetARP2Ground.Enabled = false;
 
             cmd.WaitForExit();
+
+            Program.Config.endTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
             if (File.Exists(Program.Config.GetCalcBaseOutputPath()))
             {
@@ -309,9 +356,15 @@ namespace AutoIECalcGUI
                 Program.Config.Lon[2] = elems[5];
 
                 Program.Config.BasetStationHeight = elems[6];
+
+                var hstring = allLines.Single(x => x.Contains("Antenna height"));
+                var temp = hstring.Substring(hstring.IndexOf("height ") + 6);
+                temp.Substring(0, temp.IndexOf("m")).TrimEnd();
+
+                Program.Config.AntennaMeasureHeight = Convert.ToDouble(temp).ToString();
             }
 
-            Close();
+            //Close();
         }
 
         private void RawRootPathBtn_Click(object sender, EventArgs e)
@@ -319,39 +372,36 @@ namespace AutoIECalcGUI
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                try
                 {
-                    MessageBox.Show(this, "文件夹路径不能为空", "提示");
-                    return;
-                }
-
-                if (!dialog.SelectedPath.Split('\\').Last().StartsWith("@@"))
-                {
-                    MessageBox.Show(this, "采集数据根目录必须以\"@@\"开头");
-                    return;
-                }
-
-                rawRootPath.Text = dialog.SelectedPath + @"\";
-
-                if(BasePathEdit.Text == "" && RoverPathEdit.Text == "" && OutputPathEdit.Text == "")
-                {
-                    string basePath = rawRootPath.Text + @"RawData\BASE\";
-                    if (!Directory.Exists(basePath))
+                    if (string.IsNullOrEmpty(dialog.SelectedPath))
                     {
-                        MessageBox.Show(this, string.Format("默认基站路径{0} 不存在，请手工输入！", basePath));
+                        throw new Exception("文件夹路径不能为空");
                     }
-                    BasePathEdit.Text = basePath;
 
-                    string roverPath = rawRootPath.Text + @"RawData\ROVER\";
-                    if (!Directory.Exists(basePath))
+                    if (!dialog.SelectedPath.Split('\\').Last().StartsWith("@@"))
                     {
-                        MessageBox.Show(this, string.Format("默认流动站路径{0} 不存在，请手工输入！", basePath));
+                        throw new Exception("采集数据根目录必须以\"@@\"开头");
                     }
-                    RoverPathEdit.Text = roverPath;
 
-                    string outputPath = rawRootPath.Text + @"Output\";
-                    OutputPathEdit.Text = outputPath;
+                    Program.Config.Init(dialog.SelectedPath + @"\");
+
+                    rawRootPath.Text = Program.Config.RawPath;
+                    BasePathEdit.Text = Program.Config.BaseDataPath;
+                    RoverPathEdit.Text = Program.Config.RoverDataPath;
+                    OutputPathEdit.Text = Program.Config.OutputPath;
+                    OutPutFileName.Text = Program.Config.outputName;
+
+                    LeverArmOffsetX.Text = Program.Config.LeverArmOffsetX;
+                    LeverArmOffsetY.Text = Program.Config.LeverArmOffsetY;
+                    LeverArmOffsetZ.Text = Program.Config.LeverArmOffsetZ;
+
                 }
+                catch(Exception exp)
+                {
+                    MessageBox.Show(exp.Message);
+                }
+
             }
         }
 

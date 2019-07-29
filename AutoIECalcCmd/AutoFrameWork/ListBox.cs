@@ -34,7 +34,7 @@ namespace AutoFrameWork
             WinAPI.SendMessage(_hWnd, (int)WinAPI.ListBoxMessages.LB_SELECTSTRING, (IntPtr)(-1), _Text);
             Marshal.FreeCoTaskMem(text);
 
-            Thread.Sleep(2000);
+            Thread.Sleep(500);
 
             IntPtr parenthWnd = WinAPI.GetWindowLongPtr(_hWnd, (int)WinAPI.GWL.GWL_HWNDPARENT);
             IntPtr nID = WinAPI.GetWindowLongPtr(_hWnd, (int)WinAPI.GWL.GWL_ID);

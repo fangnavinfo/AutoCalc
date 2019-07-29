@@ -49,7 +49,10 @@ namespace AutoIECalcGUI
             Program.Config.Save();
             Program.Config.Save(ConfigSetting.BaseConfigPath);
 
+            Program.Config.startTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
             Process cmd = Process.Start("AutoIECalcCmd.exe", "BASE " + mode);
+
 
             btnConfirm.Enabled = false;
             btnForGround.Enabled = false;
@@ -60,6 +63,8 @@ namespace AutoIECalcGUI
             textOffsetARP2Ground.Enabled = false;
 
             cmd.WaitForExit();
+
+            Program.Config.endTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
             if (File.Exists(Program.Config.GetCalcBaseOutputPath()))
             {

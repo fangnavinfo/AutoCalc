@@ -156,7 +156,7 @@ namespace AutoFrameWork
             _process.WaitForExit();
         }
 
-        public Window FindWindow(string winText, int waitsecond = 90)
+        public Window FindWindow(string winText, int waitsecond = 10)
         {
             return FindWindow(By.Name(winText), waitsecond);
 
@@ -223,7 +223,7 @@ namespace AutoFrameWork
                                 IntPtr exceptHwnd = tree.Find((IntPtr currhwnd) =>
                                                                 {
                                                                     string str = WinAPI.GetWindowText(currhwnd);
-                                                                    if (str.ToLower().Contains("fail") || str.ToLower().Contains("warn") || str.ToLower().Contains("not able"))
+                                                                    if (str.ToLower().Contains("fail") || str.ToLower().Contains("warn") || str.ToLower().Contains("not able") || str.ToLower().Contains("error"))
                                                                     {
                                                                         if (selector.IsTrue(currhwnd))
                                                                         {

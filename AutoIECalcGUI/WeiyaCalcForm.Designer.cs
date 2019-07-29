@@ -32,7 +32,6 @@
             this.IEPathBtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.BasePathBtn = new System.Windows.Forms.Button();
             this.BasePathEdit = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.BaseStationLat = new System.Windows.Forms.MaskedTextBox();
@@ -49,16 +48,14 @@
             this.LeverArmOffsetZ = new System.Windows.Forms.MaskedTextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.OutputPathBtn = new System.Windows.Forms.Button();
             this.OutputPathEdit = new System.Windows.Forms.TextBox();
             this.ConfirmBtn = new System.Windows.Forms.Button();
             this.AntennaHeight = new System.Windows.Forms.MaskedTextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.RoverPathEdit = new System.Windows.Forms.TextBox();
-            this.RoverPathBtn = new System.Windows.Forms.Button();
             this.CalcBaseLocBtn = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.CalcButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.OutPutFileName = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -73,6 +70,7 @@
             // 
             this.IEPathEdit.Location = new System.Drawing.Point(218, 34);
             this.IEPathEdit.Name = "IEPathEdit";
+            this.IEPathEdit.ReadOnly = true;
             this.IEPathEdit.Size = new System.Drawing.Size(349, 21);
             this.IEPathEdit.TabIndex = 0;
             // 
@@ -93,32 +91,22 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(173, 12);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Inertial Explorer V8.60 路径";
+            this.label1.Text = "Inertial Explorer V8.80 路径";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(31, 102);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(77, 12);
+            this.label3.Size = new System.Drawing.Size(53, 12);
             this.label3.TabIndex = 8;
-            this.label3.Text = "基站数据路径";
-            // 
-            // BasePathBtn
-            // 
-            this.BasePathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
-            this.BasePathBtn.Location = new System.Drawing.Point(581, 97);
-            this.BasePathBtn.Name = "BasePathBtn";
-            this.BasePathBtn.Size = new System.Drawing.Size(75, 23);
-            this.BasePathBtn.TabIndex = 7;
-            this.BasePathBtn.Text = "选择";
-            this.BasePathBtn.UseVisualStyleBackColor = true;
-            this.BasePathBtn.Click += new System.EventHandler(this.RawDataBtn_Click);
+            this.label3.Text = "基站路径";
             // 
             // BasePathEdit
             // 
             this.BasePathEdit.Location = new System.Drawing.Point(218, 98);
             this.BasePathEdit.Name = "BasePathEdit";
+            this.BasePathEdit.ReadOnly = true;
             this.BasePathEdit.Size = new System.Drawing.Size(349, 21);
             this.BasePathEdit.TabIndex = 6;
             this.BasePathEdit.TextChanged += new System.EventHandler(this.BasePathEdit_TextChanged);
@@ -211,6 +199,7 @@
             // 
             this.LeverArmOffsetX.Location = new System.Drawing.Point(218, 334);
             this.LeverArmOffsetX.Name = "LeverArmOffsetX";
+            this.LeverArmOffsetX.ReadOnly = true;
             this.LeverArmOffsetX.Size = new System.Drawing.Size(104, 21);
             this.LeverArmOffsetX.TabIndex = 30;
             // 
@@ -218,6 +207,7 @@
             // 
             this.LeverArmOffsetY.Location = new System.Drawing.Point(380, 334);
             this.LeverArmOffsetY.Name = "LeverArmOffsetY";
+            this.LeverArmOffsetY.ReadOnly = true;
             this.LeverArmOffsetY.Size = new System.Drawing.Size(104, 21);
             this.LeverArmOffsetY.TabIndex = 31;
             this.LeverArmOffsetY.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.LeverArmOffsetY_MaskInputRejected);
@@ -226,6 +216,7 @@
             // 
             this.LeverArmOffsetZ.Location = new System.Drawing.Point(524, 334);
             this.LeverArmOffsetZ.Name = "LeverArmOffsetZ";
+            this.LeverArmOffsetZ.ReadOnly = true;
             this.LeverArmOffsetZ.Size = new System.Drawing.Size(104, 21);
             this.LeverArmOffsetZ.TabIndex = 33;
             // 
@@ -247,20 +238,11 @@
             this.label6.TabIndex = 36;
             this.label6.Text = "解算输出文件路径";
             // 
-            // OutputPathBtn
-            // 
-            this.OutputPathBtn.Location = new System.Drawing.Point(581, 161);
-            this.OutputPathBtn.Name = "OutputPathBtn";
-            this.OutputPathBtn.Size = new System.Drawing.Size(75, 23);
-            this.OutputPathBtn.TabIndex = 35;
-            this.OutputPathBtn.Text = "选择";
-            this.OutputPathBtn.UseVisualStyleBackColor = true;
-            this.OutputPathBtn.Click += new System.EventHandler(this.OutputPathBtn_Click);
-            // 
             // OutputPathEdit
             // 
             this.OutputPathEdit.Location = new System.Drawing.Point(218, 162);
             this.OutputPathEdit.Name = "OutputPathEdit";
+            this.OutputPathEdit.ReadOnly = true;
             this.OutputPathEdit.Size = new System.Drawing.Size(349, 21);
             this.OutputPathEdit.TabIndex = 34;
             this.OutputPathEdit.TextChanged += new System.EventHandler(this.OutputPathEdit_TextChanged);
@@ -298,32 +280,23 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(31, 131);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 12);
+            this.label2.Size = new System.Drawing.Size(65, 12);
             this.label2.TabIndex = 40;
-            this.label2.Text = "流动站数据路径";
+            this.label2.Text = "流动站路径";
             // 
             // RoverPathEdit
             // 
             this.RoverPathEdit.Location = new System.Drawing.Point(218, 127);
             this.RoverPathEdit.Name = "RoverPathEdit";
+            this.RoverPathEdit.ReadOnly = true;
             this.RoverPathEdit.Size = new System.Drawing.Size(349, 21);
             this.RoverPathEdit.TabIndex = 41;
             this.RoverPathEdit.TextChanged += new System.EventHandler(this.RoverPathEdit_TextChanged);
             // 
-            // RoverPathBtn
-            // 
-            this.RoverPathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
-            this.RoverPathBtn.Location = new System.Drawing.Point(581, 126);
-            this.RoverPathBtn.Name = "RoverPathBtn";
-            this.RoverPathBtn.Size = new System.Drawing.Size(75, 23);
-            this.RoverPathBtn.TabIndex = 42;
-            this.RoverPathBtn.Text = "选择";
-            this.RoverPathBtn.UseVisualStyleBackColor = true;
-            this.RoverPathBtn.Click += new System.EventHandler(this.RoverPathBtn_Click);
-            // 
             // CalcBaseLocBtn
             // 
             this.CalcBaseLocBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
+            this.CalcBaseLocBtn.Enabled = false;
             this.CalcBaseLocBtn.Location = new System.Drawing.Point(581, 228);
             this.CalcBaseLocBtn.Name = "CalcBaseLocBtn";
             this.CalcBaseLocBtn.Size = new System.Drawing.Size(75, 23);
@@ -332,15 +305,16 @@
             this.CalcBaseLocBtn.UseVisualStyleBackColor = true;
             this.CalcBaseLocBtn.Click += new System.EventHandler(this.CalcBaseLocBtn_Click);
             // 
-            // button1
+            // CalcButton
             // 
-            this.button1.Location = new System.Drawing.Point(581, 400);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 44;
-            this.button1.Text = "界面解算";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.CalcButton.Enabled = false;
+            this.CalcButton.Location = new System.Drawing.Point(581, 400);
+            this.CalcButton.Name = "CalcButton";
+            this.CalcButton.Size = new System.Drawing.Size(75, 23);
+            this.CalcButton.TabIndex = 44;
+            this.CalcButton.Text = "界面解算";
+            this.CalcButton.UseVisualStyleBackColor = true;
+            this.CalcButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // label4
             // 
@@ -355,6 +329,7 @@
             // 
             this.OutPutFileName.Location = new System.Drawing.Point(218, 189);
             this.OutPutFileName.Name = "OutPutFileName";
+            this.OutPutFileName.ReadOnly = true;
             this.OutPutFileName.Size = new System.Drawing.Size(175, 21);
             this.OutPutFileName.TabIndex = 46;
             // 
@@ -371,12 +346,14 @@
             // 
             this.rawRootPath.Location = new System.Drawing.Point(218, 71);
             this.rawRootPath.Name = "rawRootPath";
+            this.rawRootPath.ReadOnly = true;
             this.rawRootPath.Size = new System.Drawing.Size(349, 21);
             this.rawRootPath.TabIndex = 48;
             // 
             // RawRootPathBtn
             // 
             this.RawRootPathBtn.AccessibleRole = System.Windows.Forms.AccessibleRole.Pane;
+            this.RawRootPathBtn.Enabled = false;
             this.RawRootPathBtn.Location = new System.Drawing.Point(581, 70);
             this.RawRootPathBtn.Name = "RawRootPathBtn";
             this.RawRootPathBtn.Size = new System.Drawing.Size(75, 23);
@@ -390,9 +367,9 @@
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(31, 75);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(89, 12);
+            this.label16.Size = new System.Drawing.Size(53, 12);
             this.label16.TabIndex = 50;
-            this.label16.Text = "采集数据根路径";
+            this.label16.Text = "工程路径";
             // 
             // button2
             // 
@@ -427,9 +404,8 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.OutPutFileName);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.CalcButton);
             this.Controls.Add(this.CalcBaseLocBtn);
-            this.Controls.Add(this.RoverPathBtn);
             this.Controls.Add(this.RoverPathEdit);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.IEPathEdit);
@@ -446,9 +422,7 @@
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.BasePathBtn);
             this.Controls.Add(this.LeverArmOffsetX);
-            this.Controls.Add(this.OutputPathBtn);
             this.Controls.Add(this.BaseStationLon);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.LeverArmOffsetY);
@@ -472,7 +446,6 @@
         private System.Windows.Forms.Button IEPathBtn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button BasePathBtn;
         private System.Windows.Forms.TextBox BasePathEdit;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.MaskedTextBox BaseStationLat;
@@ -489,16 +462,14 @@
         private System.Windows.Forms.MaskedTextBox LeverArmOffsetZ;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button OutputPathBtn;
         private System.Windows.Forms.TextBox OutputPathEdit;
         private System.Windows.Forms.Button ConfirmBtn;
         private System.Windows.Forms.MaskedTextBox AntennaHeight;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox RoverPathEdit;
-        private System.Windows.Forms.Button RoverPathBtn;
         private System.Windows.Forms.Button CalcBaseLocBtn;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button CalcButton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox OutPutFileName;
         private System.Windows.Forms.Label label5;
