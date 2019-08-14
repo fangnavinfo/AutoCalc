@@ -19,8 +19,10 @@ namespace aimapCheck
             this.rlstpath = rlstpath + "/CheckBaseRoverTime/" + currDate + "/";
         }
 
-        public void Process()
+        public int Process()
         {
+            int rslt = 1;
+
             //Report.LOG("=========================Base station and rover station time check=========================");
 
             //            工程名称：(以@@开头)
@@ -43,12 +45,16 @@ namespace aimapCheck
             var timeSync = GetSyncTimePeriod(syncFile);
 
             var baseFiles = Directory.EnumerateFiles(prjpath + @"\RawData\Base", "*.1?o");
+
+
             var timeBases = baseFiles.Select(x => (name: x.Substring(x.LastIndexOf(@"\")+1), value: GetBaseTime(x)));
 
             var discreteTimes = timeBases.Select(x => (name: x.name, value: GetDiscreteTimes(x.value)));
 
             string rlst = string.Format("工程文件名：{0}\r\n\r\n", prjpath.Substring(prjpath.IndexOf("@@")).TrimEnd('\\'));
             rlst += string.Format("基站文件名：{0}\r\n\r\n", string.Join(",", timeBases.Select(x=>x.name)));
+
+            bool needCheckSatellite = true;
 
             foreach (var time in timeBases)
             {
@@ -61,6 +67,8 @@ namespace aimapCheck
                 if (syncStart < baseStart || syncEnd > baseEnd)
                 {
                     rlst += string.Format("{0}基站采集时间是否完全包含流动站时间：否\r\n", time.name);
+                    rslt = 0;
+                    needCheckSatellite = false;
                 }
                 else
                 {
@@ -79,12 +87,24 @@ namespace aimapCheck
                 rlst += string.Join("\r\n", timegroup.value.Select(x => string.Format("{0} - {1}", x.start, x.end))) + "\r\n";
             }
 
+
             Directory.CreateDirectory(rlstpath);
             string path = rlstpath + "/check_report.txt";
 
             File.WriteAllText(path, rlst, Encoding.UTF8);
 
-            foreach(var elem in listNeedCheckSatellite)
+            if (!baseFiles.Any())
+            {
+                rslt = 0;
+                return rslt;
+            }
+
+            if (!needCheckSatellite)
+            {
+                return rslt;
+            }
+
+            foreach (var elem in listNeedCheckSatellite)
             {
                 var checker = new CheckBaseSatellite(prjpath + @"\RawData\Base\"+elem.name, elem.start, elem.end, 4);
                 var checkRslt = checker.Run();
@@ -95,9 +115,12 @@ namespace aimapCheck
                 else
                 {
                     checkRslt = string.Format("\r\n{0}基站是否有收星较差情况: 是\r\n", elem.name) + checkRslt;
+                    rslt = 0;
                 }
                 File.AppendAllText(path, checkRslt, Encoding.UTF8);
             }
+
+            return rslt;
         }
 
         private List<string> GetBaseTime(string path)

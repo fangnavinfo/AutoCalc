@@ -78,6 +78,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CheckForm.Designer.cs">
+      <DependentUpon>CheckForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConfigSetting.cs" />
     <Compile Include="Extend.cs" />
     <Compile Include="HadCalcForm.cs">
@@ -124,6 +130,9 @@
     <Compile Include="SelectForm.Designer.cs">
       <DependentUpon>SelectForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CheckForm.resx">
+      <DependentUpon>CheckForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HadCalcForm.resx">
       <DependentUpon>HadCalcForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -158,6 +167,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
+    <None Include="Properties\DataSources\CheckForm.CheckElem.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

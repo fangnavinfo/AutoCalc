@@ -23,6 +23,12 @@ namespace AutoIECalcCmd
 
             Log.INFO(string.Format("START convert base station data to gpb!"));
 
+            string gpbPath = Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.gpb").FirstOrDefault();
+            if (gpbPath != null)
+            {
+                return gpbPath;
+            }
+           
             var namse = Directory.EnumerateFiles(config.GetRawBaseStationDir());
 
             string name = (from x in Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.1?o")

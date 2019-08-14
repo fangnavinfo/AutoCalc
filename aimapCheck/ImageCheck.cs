@@ -6,12 +6,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using OpenCvSharp;
 
 namespace aimapCheck
 {
     class ImageCheck
     {
-        public ImageCheck(string path, int step, string rlstPath)
+        public ImageCheck(string path, int step, string rlstPath, string currDate)
         {
             projPath = path;
             strCCDPath = projPath + @"\RawData\CCD\";
@@ -21,20 +22,22 @@ namespace aimapCheck
             prjDate = temp.Split('-')[2];
             prjDate = String.Format("{0}:{1}:{2}", "20"+prjDate.Substring(0, 2), prjDate.Substring(2, 2), prjDate.Substring(4, 2));
 
-            pathCheckRslt = rlstPath + @"\Exposure\";
+            pathCheckRslt = rlstPath + @"\Exposure\" + currDate + @"\";
             Directory.CreateDirectory(pathCheckRslt + @"\Over");
             Directory.CreateDirectory(pathCheckRslt + @"\Under");
 
-            reportFile = new StreamWriter(pathCheckRslt + "report.csv", true);
-            totalFile = new StreamWriter(pathCheckRslt + "total.csv", true);
+            reportFile = new StreamWriter(pathCheckRslt + "report.csv", true, Encoding.Unicode);
+            totalFile = new StreamWriter(pathCheckRslt + "total.csv", true, Encoding.Unicode);
 
             var syncPath = Directory.GetFiles(projPath + @"\RawData\SYNC\", "*.sync").First();
             syncStr = File.ReadAllText(syncPath);
         }
 
-        internal void Process()
+        internal int Process()
         {
             //Log.INFO("process start");
+
+            int rslt = 1;
 
             var imagesL = Directory.EnumerateFiles(strCCDPath + @"l\", "*.JPG", SearchOption.AllDirectories);
             var imagesR = Directory.EnumerateFiles(strCCDPath + @"r\", "*.JPG", SearchOption.AllDirectories);
@@ -43,7 +46,6 @@ namespace aimapCheck
             images.AddRange(imagesL);
             //images.AddRange(imagesR);
 
-            ImageCheck.ImageCheckInit();
             ThreadPool.SetMinThreads(20,20);
             using (var finished = new CountdownEvent(1))
             {
@@ -62,15 +64,40 @@ namespace aimapCheck
                             var image = images[index];
 
                         bool isRight = image.Contains(@"\r\");
-                        ImageCheck.CheckExposure(image, ref total, ref over, ref under);
+
+                        Mat src = new Mat(image, ImreadModes.Grayscale);
+
+                        int[] channels = { 0 };
+                        int[] histSize = { 256 };
+                        float[][] ranges = { new float[]{ 0, 256 } };
+                        Mat hist = new Mat();
+                        Cv2.CalcHist(new Mat[] { src }, channels, null, hist, 1, histSize, ranges);
+
+                        List<int> rsltlist = new List<int>();
+                        for (int j = 0; j < 256; j++)
+                        {
+                            rsltlist.Add((int)hist.At<float>(j));
+                        }
+
+                        total = rsltlist.Sum();
+                        under = rsltlist.Take(50).Sum();
+                        over = rsltlist.Skip(200).Sum();
+
+                        hist = null;
+                        src = null;
+
+                        GC.Collect();
+                        //ImageCheck.CheckExposure(image, ref total, ref over, ref under);
 
                         string flag = "";
                         if ((double)over / total > 0.8)
                         {
+                            rslt = 0;
                             flag = "Over";
                         }
                         else if ((double)under / total > 0.8)
                         {
+                            rslt = 0;
                             flag = "Under";
                         }
 
@@ -90,7 +117,7 @@ namespace aimapCheck
                         RecordTotalInfo(image.Replace(strCCDPath, ""), total, over, under, flag);
 
                         Console.WriteLine(string.Format("{0}", image));
-                            finished.Signal();
+                        finished.Signal();
                     }, i);
 
                 }
@@ -100,8 +127,7 @@ namespace aimapCheck
 
             }
 
-            ImageCheck.ImageCheckExit();
-
+            return rslt;
             //Log.INFO("process finish");
 
         }
@@ -113,7 +139,7 @@ namespace aimapCheck
                 if (totalFile.BaseStream.Position == 0)
                 {
 
-                    totalFile.WriteLine("总像素数, 过曝像素数, 欠曝像素数, 过曝比例, 欠曝比例, 图片路径");
+                    totalFile.WriteLine("总像素数, 过曝像素数, 欠曝像素数, 过曝比例, 欠曝比例, 图片路径", Encoding.Unicode);
                 }
 
 
@@ -215,14 +241,5 @@ namespace aimapCheck
         public readonly string pathCheckRslt;
         private StreamWriter reportFile;
         private StreamWriter totalFile;
-
-        [DllImport("ImageCheck.dll")]
-        public static extern void ImageCheckInit();
-
-        [DllImport("ImageCheck.dll")]
-        public static extern void ImageCheckExit();
-
-        [DllImport("ImageCheck.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void CheckExposure([MarshalAs(UnmanagedType.LPStr)]string path, ref int total, ref int over, ref int under);
     }
 }

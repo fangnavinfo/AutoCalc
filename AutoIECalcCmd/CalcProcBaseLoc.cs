@@ -80,7 +80,12 @@ namespace AutoIECalcCmd
             //return @"E:\Collect\WEIYA\@@1001-0002-190228-03\RawData\BASE\SHXZ0417.gpb";
             Log.INFO(string.Format("START convert base station data to gpb!"));
 
-            ClearFile(config.GetRawBaseStationDir(), "*.gpb");
+            //ClearFile(config.GetRawBaseStationDir(), "*.gpb");
+            string gpbPath = Directory.EnumerateFiles(config.GetRawBaseStationDir(), "*.gpb").FirstOrDefault();
+            if(gpbPath != null)
+            {
+                return gpbPath;
+            }
 
             Application app = Application.Launch(config.GetConvetGPBExePath());
 

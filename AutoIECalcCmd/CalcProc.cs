@@ -28,7 +28,7 @@ namespace AutoIECalcCmd
 
 
             ClearProcess();
-            CreateOutputPath();
+            CreatePreprocessPath();
 
             string BaseGPBPath = ConvertBaseStationDataToGPB();
             string RoverGPBPath = ConvertRoverGNSSDataToGDB();
@@ -91,9 +91,9 @@ namespace AutoIECalcCmd
 
 
 
-        internal string CreateOutputPath()
+        internal string CreatePreprocessPath()
         {
-            Directory.CreateDirectory(config.GetProjectDir());
+            Directory.CreateDirectory(config.PreprocessPath);
             return OutputPath;
         }
 

@@ -19,7 +19,7 @@ namespace aimapCheck
             this.rsltPath = rlstpath + "/Track2Photo/" + currDate + "/";
         }
 
-        public void Process()
+        public int Process()
         {
             //int iStart = syncStrings.FindIndex(x => x.StartsWith("#TRG0"));
             //int iEnd = syncStrings.FindLastIndex(x => x.StartsWith("#TRG0"));
@@ -100,8 +100,9 @@ namespace aimapCheck
                     }
 
                 }
-                catch (ArgumentException )
+                catch (ArgumentException exp)
                 {
+                    Log.INFO(string.Format("Parse faild! cause:{0}, GPRMC:{1}", exp.Message, syncStrings[i]));
                     continue;
                 }
             }
@@ -109,6 +110,8 @@ namespace aimapCheck
             Directory.CreateDirectory(rsltPath);
             string path = rsltPath + "/check_report.tab";
             mapdata.WriteTab(path);
+
+            return 2;
         }
 
         private double Distance((double lon, double lat) p1, (double lon, double lat) p2)
@@ -162,6 +165,11 @@ namespace aimapCheck
         {
             string[] split = strGPRMC.Split(',');
 
+            if(split.Length < 10)
+            {
+                throw new ArgumentException("elem number < 10");
+            }
+
             string lat = split[3];
             string lon = split[5];
             string speed = split[7];
@@ -171,18 +179,26 @@ namespace aimapCheck
 
             day = string.Format("{0}{1}{2}", "20" + day.Substring(4, 2), day.Substring(2, 2), day.Substring(0, 2));
 
-            if (lat == "" || lon == "")
+            if (lat == "" || lon == "" || speed == "" || direct == "")
             {
-                throw new ArgumentException("lat or lon is empty: " + strGPRMC);
+                throw new ArgumentException("lat or lon or speed or direct is empty");
             }
 
-            var Dlat = double.Parse(lat);
-            Dlat = (int)Dlat / 100 + (Dlat - ((int)Dlat / 100) * 100) / 60;
+            try
+            {
+                var Dlat = double.Parse(lat);
+                Dlat = (int)Dlat / 100 + (Dlat - ((int)Dlat / 100) * 100) / 60;
 
-            var DLon = double.Parse(lon);
-            DLon = (int)DLon / 100 + (DLon - ((int)DLon / 100) * 100) / 60;
+                var DLon = double.Parse(lon);
+                DLon = (int)DLon / 100 + (DLon - ((int)DLon / 100) * 100) / 60;
 
-            return (Dlat, DLon, convetKnots2m_s(double.Parse(speed)), double.Parse(direct), day + "-" + time);
+                return (Dlat, DLon, convetKnots2m_s(double.Parse(speed)), double.Parse(direct), day + "-" + time);
+            }
+            catch
+            {
+                throw new ArgumentException("lat or lon or speed or direct not double");
+            }
+
         }
 
         private static double convetKnots2m_s(double v)

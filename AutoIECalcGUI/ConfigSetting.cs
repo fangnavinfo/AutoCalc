@@ -47,6 +47,7 @@ namespace AutoIECalcPublic
         public string BaseDataPath;
         public string RoverDataPath;
         public string OutputPath;
+        public string PreprocessPath;
 
         public string[] Lat = new string[3];
         public string[] Lon = new string[3];
@@ -105,12 +106,12 @@ namespace AutoIECalcPublic
 
         internal string GetCalcBaseProjectPath()
         {
-            return GetProjectDir() + @"CalcBase" + ".proj";
+            return PreprocessPath + "CalcBase" + ".proj";
         }
 
         internal string GetCalcBaseOutputPath()
         {
-            return GetProjectDir() + @"CalcBase" + ".txt";
+            return PreprocessPath + "CalcBase" + ".txt";
         }
 
         public string GetConvetGPBExePath()
@@ -165,12 +166,12 @@ namespace AutoIECalcPublic
 
         public string GetPostprocessPath()
         {
-            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName + ".POST";
+            return PreprocessPath.TrimEnd(@"\".ToCharArray()) + @"\" + outputName + ".POST";
         }
 
         public string GetProjectCfgPath()
         {
-            return GetProjectDir().TrimEnd(@"\".ToCharArray()) + @"\" + outputName +".proj";
+            return PreprocessPath.TrimEnd(@"\".ToCharArray()) + @"\" + outputName +".proj";
         }
 
         public string GetProjectDir()
@@ -194,18 +195,6 @@ namespace AutoIECalcPublic
         {
             RawPath = rawRootPath;
 
-            BaseDataPath = rawRootPath + @"RawData\BASE\";
-            if (!Directory.Exists(BaseDataPath))
-            {
-                throw new Exception(string.Format("默认基站路径{0} 不存在，无法解算！", BaseDataPath));
-            }
-
-            if (!Directory.EnumerateFiles(BaseDataPath, "*.1?o").Any() && !Directory.EnumerateFiles(BaseDataPath, "*.LOG").Any()
-                && !Directory.EnumerateFiles(BaseDataPath, "*.DAT").Any())
-            {
-                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG/*.DAT 文件 " + BaseDataPath);
-            }
-
             RoverDataPath = rawRootPath + @"RawData\ROVER\";
             if (!Directory.Exists(RoverDataPath))
             {
@@ -214,7 +203,7 @@ namespace AutoIECalcPublic
 
             if (!Directory.EnumerateFiles(RoverDataPath, "*.TXT").Any() && !Directory.EnumerateFiles(RoverDataPath, "*.gps").Any())
             {
-                throw new ArgumentException("流动站目录无法找到 *.TXT/*.gps 文件 " + RoverDataPath);
+                throw new Exception("流动站目录无法找到 *.TXT/*.gps 文件 " + RoverDataPath);
             }
 
             OutputPath = rawRootPath + @"Output\";
@@ -246,7 +235,20 @@ namespace AutoIECalcPublic
                 }
             }
 
+            PreprocessPath = rawRootPath + @"Preprocess\";
             outputName = rawRootPath.Substring(rawRootPath.IndexOf("@@")+2).Replace("\\", "");
+
+            BaseDataPath = rawRootPath + @"RawData\BASE\";
+            if (!Directory.Exists(BaseDataPath))
+            {
+                throw new ArgumentException(string.Format("默认基站路径{0} 不存在，无法解算！", BaseDataPath));
+            }
+
+            if (!Directory.EnumerateFiles(BaseDataPath, "*.1?o").Any() && !Directory.EnumerateFiles(BaseDataPath, "*.LOG").Any()
+                && !Directory.EnumerateFiles(BaseDataPath, "*.DAT").Any() && !Directory.EnumerateFiles(BaseDataPath, "*.gpb").Any())
+            {
+                throw new ArgumentException("基站目录无法找到 *.1?o/*.LOG/*.DAT/*.gpb 文件 " + BaseDataPath);
+            }
         }
 
         private string projectDir = null;

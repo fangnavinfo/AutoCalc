@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using AutoIECalcPublic;
 using System.Diagnostics;
 using System.Threading;
+using LitJson;
 
 namespace AutoIECalcGUI
 {
@@ -19,6 +20,7 @@ namespace AutoIECalcGUI
         public MultiCalcForm()
         {
             InitializeComponent();
+            //MultiCalcElem.actUpdate = () => this.dataGridView1.Refresh();
 
             IEPathEdit.TextChanged += (sender, e) =>
             {
@@ -51,6 +53,8 @@ namespace AutoIECalcGUI
 
             Thread t = new Thread(new ThreadStart(() =>
            {
+               Action act = () => this.dataGridView1.Refresh();
+
                foreach (var item in list)
                {
                    if(item.status == MultiCalcElem.Status.DataError)
@@ -75,6 +79,9 @@ namespace AutoIECalcGUI
                        item.setRslt(value);
                        item.endTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                        exportLog(logPath, item);
+
+                       act();
+
                        continue;
                    }
 
@@ -93,6 +100,7 @@ namespace AutoIECalcGUI
 
                    value = processPrj.ExitCode;
                    item.setRslt(value);
+                   act();
 
                    exportLog(logPath, item);
                }
@@ -207,11 +215,17 @@ namespace AutoIECalcGUI
                 }
 
                 IEPathEdit.Text = dialog.SelectedPath + @"\";
+
+                Program.Config.IEPath = IEPathEdit.Text;
+                Program.Config.Save();
             }
         }
 
         private void MultiCalcForm_Load(object sender, EventArgs e)
         {
+            Program.Config = ConfigSetting.Load(ConfigSetting.WeiyaConfigPath);
+            this.IEPathEdit.Text = Program.Config.IEPath;
+            
             //dt = new DataTable();
             //dt.Columns.Add(new DataColumn("工程名称", typeof(string)));
             //dt.Columns.Add(new DataColumn("当前状态", typeof(string)));
@@ -229,6 +243,8 @@ namespace AutoIECalcGUI
 
     class MultiCalcElem : ConfigSetting
     {
+        //public static Action actUpdate;
+
         public int index { get; set; }
 
         public string name
@@ -330,6 +346,8 @@ namespace AutoIECalcGUI
                 status = MultiCalcElem.Status.CalcPrjFail;
                 error = "AutoIECalcCmd not Finish!";
             }
+
+            //actUpdate();
         }
 
         //public string basePath;

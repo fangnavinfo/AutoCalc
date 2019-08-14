@@ -22,11 +22,20 @@ namespace AutoIECalcGUI
             IEPathEdit.TextChanged += (object sender, EventArgs e) =>
             {
                 RawRootPathBtn.Enabled = (IEPathEdit.Text.Any());
+
+                Program.Config.IEPath = IEPathEdit.Text;
             };
 
             rawRootPath.TextChanged += (object sender, EventArgs e) =>
             {
-                CalcBaseLocBtn.Enabled = (rawRootPath.Text.Any());
+                if(rawRootPath.Text.Length != 0)
+                {
+                    //Program.Config.Init(rawRootPath.Text);
+
+                    CalcBaseLocBtn.Enabled = (rawRootPath.Text.Any());
+                    btnCheck.Enabled = (rawRootPath.Text.Any());
+                }
+                //Program.Config.RawPath = rawRootPath.Text;
             };
 
             BaseStationLon.TextChanged += (object sender, EventArgs e) =>
@@ -54,7 +63,7 @@ namespace AutoIECalcGUI
 
             BasePathEdit.Text = Program.Config.BaseDataPath;
             RoverPathEdit.Text = Program.Config.RoverDataPath;
-            OutputPathEdit.Text = Program.Config.OutputPath;
+            OutputPathEdit.Text = Program.Config.PreprocessPath;
             OutPutFileName.Text = Program.Config.outputName;
 
             BaseStationHeight.Text = Program.Config.BasetStationHeight;
@@ -106,6 +115,8 @@ namespace AutoIECalcGUI
                 }
 
                 IEPathEdit.Text = dialog.SelectedPath + @"\";
+                Program.Config.IEPath = IEPathEdit.Text;
+                Program.Config.Save();
             }
         }
 
@@ -146,7 +157,7 @@ namespace AutoIECalcGUI
 
             Program.Config.BaseDataPath = BasePathEdit.Text;
             Program.Config.RoverDataPath = RoverPathEdit.Text;
-            Program.Config.OutputPath = OutputPathEdit.Text;
+            Program.Config.PreprocessPath = OutputPathEdit.Text;
             Program.Config.outputName = OutPutFileName.Text;
 
             Program.Config.BasetStationHeight = BaseStationHeight.Text;
@@ -204,7 +215,7 @@ namespace AutoIECalcGUI
 
                 Program.Config.BaseDataPath = BasePathEdit.Text;
                 Program.Config.RoverDataPath = RoverPathEdit.Text;
-                Program.Config.OutputPath = OutputPathEdit.Text;
+                Program.Config.PreprocessPath = OutputPathEdit.Text;
                 Program.Config.outputName = OutPutFileName.Text;
 
                 Program.Config.BasetStationHeight = BaseStationHeight.Text;
@@ -228,8 +239,22 @@ namespace AutoIECalcGUI
 
                 Program.Config.Save();
 
-                Process.Start("AutoIECalcCmd.exe", "WEIYA " + mode);
+                var process = Process.Start("AutoIECalcCmd.exe", "WEIYA " + mode);
 
+                this.Hide();
+
+                process.WaitForExit();
+
+                int value = process.ExitCode;
+                if (value == 2)
+                {
+                    MessageBox.Show("解算成功!\n输出文件路径：" + Program.Config.GetPostprocessPath());
+                }
+                else if (value == 1)
+                {
+                    MessageBox.Show("解算失败!\n" + File.ReadAllText(ConfigSetting.errfile));
+                }
+                
                 Application.Exit();
             }
             catch(Exception e)
@@ -359,7 +384,7 @@ namespace AutoIECalcGUI
 
                 var hstring = allLines.Single(x => x.Contains("Antenna height"));
                 var temp = hstring.Substring(hstring.IndexOf("height ") + 6);
-                temp.Substring(0, temp.IndexOf("m")).TrimEnd();
+                temp = temp.Substring(0, temp.IndexOf("m")).TrimEnd();
 
                 Program.Config.AntennaMeasureHeight = Convert.ToDouble(temp).ToString();
             }
@@ -389,13 +414,27 @@ namespace AutoIECalcGUI
                     rawRootPath.Text = Program.Config.RawPath;
                     BasePathEdit.Text = Program.Config.BaseDataPath;
                     RoverPathEdit.Text = Program.Config.RoverDataPath;
-                    OutputPathEdit.Text = Program.Config.OutputPath;
+                    OutputPathEdit.Text = Program.Config.PreprocessPath;
                     OutPutFileName.Text = Program.Config.outputName;
 
                     LeverArmOffsetX.Text = Program.Config.LeverArmOffsetX;
                     LeverArmOffsetY.Text = Program.Config.LeverArmOffsetY;
                     LeverArmOffsetZ.Text = Program.Config.LeverArmOffsetZ;
 
+                }
+                catch(ArgumentException exp)
+                {
+                    rawRootPath.Text = Program.Config.RawPath;
+                    BasePathEdit.Text = Program.Config.BaseDataPath;
+                    RoverPathEdit.Text = Program.Config.RoverDataPath;
+                    OutputPathEdit.Text = Program.Config.PreprocessPath;
+                    OutPutFileName.Text = Program.Config.outputName;
+
+                    LeverArmOffsetX.Text = Program.Config.LeverArmOffsetX;
+                    LeverArmOffsetY.Text = Program.Config.LeverArmOffsetY;
+                    LeverArmOffsetZ.Text = Program.Config.LeverArmOffsetZ;
+
+                    MessageBox.Show(exp.Message);
                 }
                 catch(Exception exp)
                 {
@@ -419,6 +458,12 @@ namespace AutoIECalcGUI
             cmd.WaitForExit();
 
             MessageBox.Show("检查完毕！");
+        }
+
+        private void btnCheck_Click(object sender, EventArgs e)
+        {
+            var dialog = new CheckForm();
+            dialog.ShowDialog();
         }
     }
 }

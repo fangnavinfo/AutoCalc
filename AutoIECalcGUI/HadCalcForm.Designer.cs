@@ -270,6 +270,7 @@
             this.ConfirmBtn.TabIndex = 37;
             this.ConfirmBtn.Text = "后台解算";
             this.ConfirmBtn.UseVisualStyleBackColor = true;
+            this.ConfirmBtn.Visible = false;
             this.ConfirmBtn.Click += new System.EventHandler(this.ConfirmBtn_Click);
             // 
             // AntennaHeight
@@ -374,9 +375,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(136, 362);
+            this.button3.Location = new System.Drawing.Point(63, 362);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(156, 23);
+            this.button3.Size = new System.Drawing.Size(229, 23);
             this.button3.TabIndex = 49;
             this.button3.Text = "检查基站时间是否覆盖流动站时间";
             this.button3.UseVisualStyleBackColor = true;

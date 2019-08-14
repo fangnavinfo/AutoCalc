@@ -9,74 +9,70 @@ namespace aimapCheck
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             try
             {
 
                 Log.INFO("Process Start: " + string.Join(" ", args));
 
-                if (args.Count() < 1)
+                if (args.Count() < 2)
                 {
                     throw new ArgumentException("参数个数错误");
                 }
 
+                if (!Directory.Exists(args[0]))
+                {
+                    throw new ArgumentException("文件目录不存在, " + args[0]);
+                }
+
                 string rlstpath = args[0] + @"\Check\";
                 var currDate = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var query = args.FirstOrDefault(x => x.Contains("-dir--"));
+                if (query != null)
+                {
+                    currDate = query.Replace("-dir--", "");
+                }
 
                 Report.Init(rlstpath);
 
                 //DataIntegrityCheck dataCheck = new DataIntegrityCheck(args[0]);
                 //dataCheck.Process();
+                int rslt = -1;
 
-                if (args.Any(x => x == "-check_track2photo"))
+                if (args[1] == "-check_track2photo")
                 {
                     CheckTrack2Photo check = new CheckTrack2Photo(args[0], rlstpath, currDate);
-                    check.Process();
+                    rslt = check.Process();
                 }
-
-                if (args.Any(x => x == "-check_basesatelite"))
-                {
-                    CheckBaseSatellite check = new CheckBaseSatellite(args[0], rlstpath, currDate);
-                    check.Process();
-                }
-
-                if (args.Any(x => x == "-check_basetime"))
+                else if (args[1] == "-check_basetime")
                 {
                     CheckBaseTime check = new CheckBaseTime(args[0], rlstpath, currDate);
-                    check.Process();
+                    rslt = check.Process();
                 }
-
-                var exposureCheckIndex = Array.FindIndex(args, x => x == "-check_exposure");
-                if (exposureCheckIndex != -1)
+                else if (args[1].StartsWith("-check_exposure"))
                 {
                     int step = 1;
-                    if (args.Count() > exposureCheckIndex + 1)
+                    if(args[1].StartsWith("-check_exposure--step:"))
                     {
-                        try
-                        {
-                            step = int.Parse(args[exposureCheckIndex + 1]);
-                        }
-                        catch
-                        {
-
-                        }
+                        var str = args[1].Replace("-check_exposure--step:", "");
+                        step = int.Parse(str);
                     }
-
-                    if (step < 1)
-                    {
-                        throw new ArgumentException();
-                    }
-
-                    ImageCheck imageCheck = new ImageCheck(args[0], step, rlstpath);
-                    imageCheck.Process();
+                    ImageCheck imageCheck = new ImageCheck(args[0], step, rlstpath, currDate);
+                    rslt = imageCheck.Process();
+                }
+                else
+                {
+                    throw new Exception("not support param:" + args[1]);
                 }
 
                 Log.INFO("Process Finish");
+                return rslt;
             }
             catch (Exception e)
             {
                 Log.INFO("Process Failed!" + e.Message + "\n" + e.StackTrace);
+                return -1;
             }
         }
 

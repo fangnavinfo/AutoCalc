@@ -34,6 +34,7 @@ namespace AutoIECalcGUI
             StereoMatchLaunchForm dialog = new StereoMatchLaunchForm();
             dialog.ShowDialog();
 
+            
             this.Close();
         }
 
